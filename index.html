@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splitwise — Proporcionalidade 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --surface2: #EEEAE2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --text: #1A1816;
+  --text-muted: #7A756C;
+  --text-faint: #AEA99F;
+  --green: #2D6A4F;
+  --green-bg: #D8F3DC;
+  --amber: #7B4F12;
+  --amber-bg: #FFF3CD;
+  --red-bg: #FFE4E8;
+  --red: #9B2335;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem 4rem; }
+.container { max-width: 1000px; margin: 0 auto; }
+
+header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-strong); }
+header .label { font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+header h1 { font-size: 1.8rem; font-weight: 300; letter-spacing: -0.02em; }
+header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; font-family: var(--mono); }
+
+.inputs-row { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: flex-end; flex-wrap: wrap; }
+.input-group { display: flex; flex-direction: column; gap: 5px; }
+.input-group label { font-size: 0.65rem; font-family: var(--mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
+.input-group input { padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: var(--mono); width: 190px; outline: none; transition: border-color 0.15s; }
+.input-group input:focus { border-color: var(--green); }
+.recalc-btn { padding: 8px 20px; border: 1px solid var(--text); border-radius: 6px; background: var(--text); color: var(--bg); font-size: 0.75rem; font-family: var(--mono); cursor: pointer; letter-spacing: 0.04em; transition: opacity 0.15s; }
+.recalc-btn:hover { opacity: 0.7; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-strong); border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; margin-bottom: 2rem; }
+.metric { background: var(--surface); padding: 1.25rem 1.5rem; }
+.metric .mlabel { font-size: 0.65rem; font-family: var(--mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+.metric .mvalue { font-size: 1.5rem; font-weight: 300; letter-spacing: -0.02em; font-family: var(--mono); }
+.metric .mvalue.green { color: var(--green); }
+.metric .msub { font-size: 0.7rem; color: var(--text-faint); font-family: var(--mono); margin-top: 4px; }
+
+.tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-strong); }
+.tab { padding: 8px 18px 10px; font-size: 0.8rem; font-family: var(--mono); color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* Resumo */
+.resumo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.resumo-card { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; padding: 1.25rem; }
+.resumo-card h3 { font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 1rem; }
+.resumo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.resumo-row:last-child { border-bottom: none; }
+.resumo-row.highlight { font-weight: 500; color: var(--green); }
+.resumo-row .rkey { color: var(--text-muted); font-size: 0.8rem; }
+.resumo-row .rval { font-family: var(--mono); font-size: 0.85rem; }
+
+.excluidos-card { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.excluidos-card h3 { font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 1rem; }
+.excluido-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.excluido-item:last-child { border-bottom: none; }
+.excluido-item .ei-left { display: flex; gap: 8px; align-items: center; }
+.excluido-item .ei-mes { font-family: var(--mono); font-size: 0.65rem; color: var(--text-faint); background: var(--surface2); padding: 2px 6px; border-radius: 4px; }
+.excluido-item .ei-val { font-family: var(--mono); color: var(--text-muted); text-decoration: line-through; }
+.badge { font-size: 0.6rem; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.04em; }
+.badge-plano { background: var(--amber-bg); color: var(--amber); }
+.badge-individual { background: var(--red-bg); color: var(--red); }
+.badge-excluido { background: var(--surface2); color: var(--text-muted); }
+
+/* Mensal */
+.mensal-table { width: 100%; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; border-collapse: collapse; }
+.mensal-table th { font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); padding: 12px 16px; text-align: right; background: var(--surface2); border-bottom: 1px solid var(--border-strong); }
+.mensal-table th:first-child { text-align: left; }
+.mensal-table td { padding: 11px 16px; font-size: 0.85rem; text-align: right; border-bottom: 1px solid var(--border); font-family: var(--mono); }
+.mensal-table td:first-child { text-align: left; font-family: var(--sans); font-size: 0.9rem; }
+.mensal-table tr:last-child td { border-bottom: none; }
+.mensal-table tr:hover td { background: var(--bg); }
+.mensal-table .green { color: var(--green); font-weight: 500; }
+.mensal-table .total-row td { background: var(--surface2); font-weight: 500; border-top: 1px solid var(--border-strong); }
+
+/* Despesas */
+.month-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.month-btn { padding: 6px 14px; border: 1px solid var(--border-strong); border-radius: 20px; font-size: 0.75rem; font-family: var(--mono); cursor: pointer; background: var(--surface); color: var(--text-muted); transition: all 0.15s; }
+.month-btn:hover { border-color: var(--text); color: var(--text); }
+.month-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+.despesa-header { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px 10px 0 0; padding: 1rem 1.25rem; border-bottom: none; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.despesa-header h3 { font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.despesa-header .dh-stats { display: flex; gap: 1.5rem; }
+.despesa-header .dh-stat { text-align: right; }
+.despesa-header .dh-stat .dsl { font-size: 0.6rem; font-family: var(--mono); color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+.despesa-header .dh-stat .dsv { font-size: 1rem; font-family: var(--mono); font-weight: 400; }
+.despesa-header .dh-stat .dsv.green { color: var(--green); }
+
+.despesa-table { width: 100%; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 0 0 10px 10px; overflow: hidden; border-collapse: collapse; }
+.despesa-table th { font-size: 0.6rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); padding: 10px 14px; text-align: left; background: var(--surface2); border-bottom: 1px solid var(--border-strong); }
+.despesa-table th:last-child { text-align: right; width: 60px; }
+.despesa-table th.val { text-align: right; }
+.despesa-table td { padding: 10px 14px; font-size: 0.82rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.despesa-table td.val { text-align: right; font-family: var(--mono); }
+.despesa-table td.act { text-align: right; }
+.despesa-table tr:last-child td { border-bottom: none; }
+.despesa-table tr.excluida td { color: var(--text-faint); text-decoration: line-through; background: var(--bg); }
+.despesa-table tr.excluida td.act { text-decoration: none; }
+.despesa-table tr:hover:not(.excluida) td { background: #faf9f7; }
+
+.toggle-btn { padding: 4px 10px; border-radius: 4px; font-size: 0.65rem; font-family: var(--mono); cursor: pointer; border: 1px solid var(--border-strong); background: transparent; color: var(--text-muted); transition: all 0.15s; white-space: nowrap; }
+.toggle-btn:hover { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+.toggle-btn.restore { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.toggle-btn.restore:hover { background: var(--green); color: white; }
+
+.info-bar { background: var(--amber-bg); border: 1px solid #E8C97A; border-radius: 8px; padding: 10px 16px; font-size: 0.78rem; color: var(--amber); font-family: var(--mono); margin-bottom: 1.5rem; }
+
+.empty-excluidos { font-size: 0.8rem; color: var(--text-faint); font-family: var(--mono); padding: 8px 0; }
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .metrics { grid-template-columns: 1fr; }
+  .resumo-grid { grid-template-columns: 1fr; }
+  .metric .mvalue { font-size: 1.2rem; }
+  .despesa-header { flex-direction: column; align-items: flex-start; }
+  .dh-stats { flex-direction: column; gap: 0.5rem; }
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+#login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+}
+.login-box .login-label {
+  font-size: 0.65rem; font-family: var(--mono);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted); margin-bottom: 0.3rem;
+}
+.login-box h2 {
+  font-size: 1.4rem; font-weight: 300;
+  letter-spacing: -0.02em; margin-bottom: 1.75rem;
+}
+.login-box .field { margin-bottom: 1rem; }
+.login-box .field label {
+  display: block; font-size: 0.65rem; font-family: var(--mono);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text-muted); margin-bottom: 5px;
+}
+.login-box .field input {
+  width: 100%; padding: 9px 13px;
+  border: 1px solid var(--border-strong); border-radius: 7px;
+  background: var(--bg); color: var(--text);
+  font-size: 0.9rem; font-family: var(--mono); outline: none;
+  transition: border-color 0.15s;
+}
+.login-box .field input:focus { border-color: var(--green); }
+.login-btn {
+  width: 100%; padding: 10px;
+  background: var(--text); color: var(--bg);
+  border: none; border-radius: 7px;
+  font-family: var(--mono); font-size: 0.8rem;
+  letter-spacing: 0.04em; cursor: pointer;
+  margin-top: 0.5rem; transition: opacity 0.15s;
+}
+.login-btn:hover { opacity: 0.75; }
+.login-error {
+  font-size: 0.75rem; font-family: var(--mono);
+  color: var(--red); margin-top: 0.75rem;
+  display: none; text-align: center;
+}
+.login-who {
+  font-size: 0.7rem; font-family: var(--mono);
+  color: var(--text-faint); text-align: center;
+  margin-top: 1rem;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-label">Splitwise · 2025</div>
+    <h2>Entrar</h2>
+    <div class="field">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="michel ou nara" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="tentarLogin()">entrar →</button>
+    <div class="login-error" id="login-error">usuário ou senha incorretos.</div>
+    <div class="login-who" id="login-who"></div>
+  </div>
+</div>
+<div class="container">
+
+  <header>
+    <div class="label">Splitwise · 2025</div>
+    <h1>Proporcionalidade de gastos</h1>
+    <p>Gastos compartilhados · CDI 102% · Clique em "excluir" em qualquer item para retirá-lo do cálculo</p>
+  </header>
+
+  <div class="inputs-row">
+    <div class="input-group">
+      <label>Salário médio — Nara</label>
+      <input type="number" id="sal-nara" value="11800">
+    </div>
+    <div class="input-group">
+      <label>Salário médio — Michel</label>
+      <input type="number" id="sal-michel" value="20000">
+    </div>
+    <button class="recalc-btn" onclick="recalcular()">↺ recalcular</button>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="mlabel">Total gasto conjunto</div>
+      <div class="mvalue" id="m-total">—</div>
+      <div class="msub">sem itens individuais</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Michel deve (bruto)</div>
+      <div class="mvalue green" id="m-bruto">—</div>
+      <div class="msub" id="m-pct">—% vs 50/50</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Total com CDI 102%</div>
+      <div class="mvalue green" id="m-cdi">—</div>
+      <div class="msub" id="m-rend">rendimento: —</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('resumo', this)">resumo</button>
+    <button class="tab" onclick="showTab('mensal', this)">mês a mês</button>
+    <button class="tab" onclick="showTab('despesas', this)">despesas</button>
+    <button class="tab" onclick="showTab('bens', this)">divisão de bens</button>
+  </div>
+
+  <!-- RESUMO -->
+  <div id="tab-resumo" class="section active">
+    <div class="info-bar">💡 Vá em "despesas" e clique em "excluir" em qualquer item para retirá-lo do cálculo. O resumo atualiza automaticamente.</div>
+    <div class="resumo-grid">
+      <div class="resumo-card">
+        <h3>Proporcionalidade</h3>
+        <div id="resumo-prop"></div>
+      </div>
+      <div class="resumo-card">
+        <h3>Resultado final</h3>
+        <div id="resumo-final"></div>
+      </div>
+    </div>
+    <div class="excluidos-card">
+      <h3>Itens excluídos do cálculo</h3>
+      <div id="resumo-excluidos"></div>
+    </div>
+  </div>
+
+  <!-- DIVISÃO DE BENS -->
+  <div id="tab-bens" class="section">
+    <div id="bens-sync-bar" class="info-bar" style="display:none"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      <div class="metric" style="border-radius:10px;border:1px solid var(--border-strong);">
+        <div class="mlabel">Michel fica com</div>
+        <div class="mvalue" id="bens-total-michel">R$ 0,00</div>
+        <div class="msub" id="bens-count-michel">0 bens</div>
+      </div>
+      <div class="metric" style="border-radius:10px;border:1px solid var(--border-strong);">
+        <div class="mlabel">Nara fica com</div>
+        <div class="mvalue green" id="bens-total-nara">R$ 0,00</div>
+        <div class="msub" id="bens-count-nara">0 bens</div>
+      </div>
+    </div>
+
+    <!-- Barra de proporção -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:0.75rem;">proporção</div>
+      <div style="height:8px;border-radius:8px;background:var(--surface2);overflow:hidden;margin-bottom:8px;">
+        <div id="bens-bar" style="height:100%;width:50%;background:linear-gradient(90deg,#1A1816,var(--green));border-radius:8px;transition:width 0.4s ease;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-family:var(--mono);color:var(--text-muted);">
+        <span id="bens-pct-michel">Michel: 50%</span>
+        <span id="bens-pct-nara" style="color:var(--green)">Nara: 50%</span>
+      </div>
+    </div>
+
+    <!-- Formulário -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">adicionar bem</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:0.75rem;align-items:end;flex-wrap:wrap;">
+        <div class="input-group" style="margin:0">
+          <label>Nome do bem</label>
+          <input type="text" id="bem-nome" placeholder="Ex: Apartamento, Carro…" style="width:100%">
+        </div>
+        <div class="input-group" style="margin:0">
+          <label>Valor (R$)</label>
+          <input type="number" id="bem-valor" placeholder="0,00" min="0" step="0.01" style="width:100%">
+        </div>
+        <div class="input-group" style="margin:0">
+          <label>Quem fica</label>
+          <select id="bem-dono" style="padding:8px 12px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface);color:var(--text);font-size:0.9rem;font-family:var(--mono);outline:none;">
+            <option value="michel">Michel</option>
+            <option value="nara">Nara</option>
+          </select>
+        </div>
+        <button class="recalc-btn" onclick="adicionarBem()" style="white-space:nowrap">+ adicionar</button>
+      </div>
+      <div id="bens-saving" style="font-size:0.7rem;font-family:var(--mono);color:var(--text-faint);margin-top:8px;display:none;">salvando…</div>
+    </div>
+
+    <!-- Lista -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;">
+      <table class="mensal-table" style="border-radius:0">
+        <thead>
+          <tr>
+            <th style="text-align:left">Bem</th>
+            <th class="val">Valor</th>
+            <th class="val">Quem fica</th>
+            <th style="text-align:right;width:80px">Ação</th>
+          </tr>
+        </thead>
+        <tbody id="bens-lista">
+          <tr><td colspan="4" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">nenhum bem adicionado ainda.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+      <button class="recalc-btn" onclick="exportarBensCSV()" style="background:transparent;color:var(--text);font-size:0.72rem;">⬇ exportar CSV</button>
+      <button class="recalc-btn" onclick="window.print()" style="background:transparent;color:var(--text);font-size:0.72rem;">🖨 imprimir</button>
+    </div>
+  </div>
+
+  <!-- MENSAL -->
+  <div id="tab-mensal" class="section">
+    <table class="mensal-table" id="mensal-table"></table>
+  </div>
+
+  <!-- DESPESAS -->
+  <div id="tab-despesas" class="section">
+    <div class="month-nav" id="month-nav"></div>
+    <div class="despesa-header" id="despesa-header"></div>
+    <table class="despesa-table" id="despesa-table"></table>
+  </div>
+
+</div>
+
+<script>
+const CDI = {1:0.01076,2:0.01057,3:0.01165,4:0.01048,5:0.01073,6:0.01034,7:0.01072,8:0.01119,9:0.01107,10:0.01082,11:0.01028,12:0.01074};
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+const RAW = [
+  {mes:1,nome:'Janeiro',items:[
+    {id:'1-1',data:'09/01',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'1-2',data:'11/01',desc:'Petz - Remédio Maré',cat:'Animais de estimação',custo:90.00},
+    {id:'1-3',data:'13/01',desc:'Ouro Claro',cat:'Mercado',custo:25.19},
+    {id:'1-4',data:'15/01',desc:'Ouro Claro',cat:'Mercado',custo:55.62},
+    {id:'1-5',data:'21/01',desc:'Sabesp',cat:'Água',custo:112.54},
+    {id:'1-6',data:'21/01',desc:'Laicão - Ração',cat:'Animais de estimação',custo:261.25},
+    {id:'1-7',data:'30/01',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'1-8',data:'30/01',desc:'Pda - carne, iogurte, pão, azeite',cat:'Mercado',custo:100.27},
+    {id:'1-9',data:'31/01',desc:'Laicão - Sacos de Lixo',cat:'Animais de estimação',custo:19.00},
+    {id:'1-10',data:'06/02',desc:'Colchão',cat:'Móveis',custo:2027.305},
+    {id:'1-10b',data:'06/02',desc:'Cama',cat:'Móveis',custo:2027.305},
+    {id:'1-11',data:'06/02',desc:'Aluguel',cat:'Aluguel',custo:3643.25},
+    {id:'1-12',data:'10/02',desc:'Cartão Conjunto - Fevereiro',cat:'Casa - Outros',custo:6776.81},
+    {id:'1-13',data:'11/02',desc:'Macbook',cat:'Eletrônicos',custo:1408.00,excluido:true,tipo:'individual'},
+    {id:'1-14',data:'11/02',desc:'IPTU',cat:'Aluguel',custo:446.44},
+  ]},
+  {mes:2,nome:'Fevereiro',items:[
+    {id:'2-1',data:'01/02',desc:'Macondo',cat:'Jantar fora',custo:55.00},
+    {id:'2-2',data:'08/02',desc:'Doleiras',cat:'Entretenimento',custo:40.00},
+    {id:'2-3',data:'12/02',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'2-4',data:'14/02',desc:'Seguro Residencial - Bradesco',cat:'Seguro',custo:117.97},
+    {id:'2-5',data:'14/02',desc:'Pda',cat:'Mercado',custo:71.73},
+    {id:'2-6',data:'20/02',desc:'Sabesp',cat:'Água',custo:136.70},
+    {id:'2-7',data:'26/02',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'2-8',data:'10/03',desc:'Cartão Conjunto - Março',cat:'Casa - Outros',custo:4015.05},
+    {id:'2-9',data:'10/03',desc:'Aluguel',cat:'Aluguel',custo:3805.47},
+    {id:'2-10',data:'10/03',desc:'IPTU',cat:'Aluguel',custo:446.44},
+    {id:'2-11',data:'11/03',desc:'Massa 🍁',cat:'Presentes',custo:450.00},
+  ]},
+  {mes:3,nome:'Março',items:[
+    {id:'3-1',data:'01/03',desc:'Bebidas - BH',cat:'Bebidas alcoólicas',custo:40.00},
+    {id:'3-2',data:'08/03',desc:'Uber - Volta Lu e Coelho',cat:'Táxi',custo:12.99},
+    {id:'3-3',data:'11/03',desc:'Pda',cat:'Mercado',custo:76.85},
+    {id:'3-4',data:'16/03',desc:'Z deli',cat:'Jantar fora',custo:126.00},
+    {id:'3-5',data:'17/03',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'3-6',data:'19/03',desc:'Pda',cat:'Mercado',custo:12.58},
+    {id:'3-7',data:'21/03',desc:'Zé Delivery - Tônica e Gelo',cat:'Comidas e bebidas',custo:68.56},
+    {id:'3-8',data:'21/03',desc:'Pizza (coelho)',cat:'Jantar fora',custo:100.00},
+    {id:'3-9',data:'24/03',desc:'Sabesp',cat:'Água',custo:112.54},
+    {id:'3-10',data:'25/03',desc:'Pé Pra Fora',cat:'Jantar fora',custo:80.60},
+    {id:'3-11',data:'27/03',desc:'Off',cat:'Despesas médicas',custo:26.00},
+    {id:'3-12',data:'28/03',desc:'Uber - Volta Esquina Sousa',cat:'Táxi',custo:10.98},
+    {id:'3-13',data:'28/03',desc:'Esquina do Sousa',cat:'Jantar fora',custo:197.93},
+    {id:'3-14',data:'08/04',desc:'Aluguel',cat:'Aluguel',custo:4500.00},
+    {id:'3-15',data:'10/04',desc:'Cartão Conjunto - Abril',cat:'Casa - Outros',custo:8309.07},
+    {id:'3-16',data:'10/04',desc:'IPTU',cat:'Aluguel',custo:446.44},
+  ]},
+  {mes:4,nome:'Abril',items:[
+    {id:'4-1',data:'01/04',desc:'Laicão - Ração',cat:'Animais de estimação',custo:261.25},
+    {id:'4-2',data:'04/04',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'4-3',data:'06/04',desc:'Sorvete',cat:'Mercado',custo:49.00},
+    {id:'4-4',data:'09/04',desc:'Beneflora - Maré',cat:'Animais de estimação',custo:76.00},
+    {id:'4-5',data:'11/04',desc:'Uber show gil',cat:'Táxi',custo:19.88},
+    {id:'4-6',data:'13/04',desc:'Sonda',cat:'Mercado',custo:55.42},
+    {id:'4-7',data:'14/04',desc:'Drogasil - Remédios, Vita C...',cat:'Despesas médicas',custo:46.78},
+    {id:'4-8',data:'14/04',desc:'Magazine Luiza - Máquina de Lavar',cat:'Eletrônicos',custo:2603.38},
+    {id:'4-9',data:'16/04',desc:'Uber mãe',cat:'Táxi',custo:29.98},
+    {id:'4-10',data:'17/04',desc:'Tinta',cat:'Manutenção',custo:755.00},
+    {id:'4-11',data:'17/04',desc:'iFood - Z Deli',cat:'Comidas e bebidas',custo:141.66},
+    {id:'4-12',data:'18/04',desc:'Leo',cat:'Manutenção',custo:2750.00},
+    {id:'4-13',data:'19/04',desc:'Kar Wua',cat:'Comidas e bebidas',custo:96.00},
+    {id:'4-14',data:'21/04',desc:'Uber almoço Nina',cat:'Transporte',custo:25.91},
+    {id:'4-15',data:'22/04',desc:'Leo',cat:'Manutenção',custo:2750.00},
+    {id:'4-16',data:'23/04',desc:'Cida',cat:'Serviços',custo:215.00},
+    {id:'4-17',data:'24/04',desc:'Sabesp',cat:'Água',custo:112.54},
+    {id:'4-18',data:'25/04',desc:'Pizzaria Diavola',cat:'Jantar fora',custo:109.00},
+    {id:'4-19',data:'26/04',desc:'Ubers casa antiga',cat:'Táxi',custo:32.67},
+    {id:'4-20',data:'29/04',desc:'Edson Cataki',cat:'Serviços',custo:200.00},
+    {id:'4-21',data:'29/04',desc:'Vidro mendicute',cat:'Manutenção',custo:238.00},
+    {id:'4-22',data:'06/05',desc:'Aluguel + IPTU + Condomínio',cat:'Aluguel',custo:2247.93},
+    {id:'4-23',data:'10/05',desc:'Cartão Conjunto - Maio',cat:'Casa - Outros',custo:8345.52},
+  ]},
+  {mes:5,nome:'Maio',items:[
+    {id:'5-1',data:'02/05',desc:'Dom Pepe',cat:'Jantar fora',custo:65.00},
+    {id:'5-2',data:'02/05',desc:'Pão de Açúcar',cat:'Mercado',custo:163.07},
+    {id:'5-3',data:'05/05',desc:'Pão de Açúcar',cat:'Carro',custo:19.75},
+    {id:'5-4',data:'10/05',desc:'Z-Deli',cat:'Jantar fora',custo:137.75},
+    {id:'5-5',data:'14/05',desc:'Sean - Vaquinha Fotos',cat:'Casa - Outros',custo:100.00},
+    {id:'5-6',data:'16/05',desc:'Sonda - salada e lysoform',cat:'Mercado',custo:50.21},
+    {id:'5-7',data:'19/05',desc:'Sabesp',cat:'Água',custo:76.30},
+    {id:'5-8',data:'21/05',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'5-9',data:'21/05',desc:'🍁',cat:'Entretenimento',custo:495.00},
+    {id:'5-10',data:'22/05',desc:'Almoço sesc (cartão errado)',cat:'Jantar fora',custo:7.50},
+    {id:'5-11',data:'23/05',desc:'Uber - Ida e Volta Niver Igor',cat:'Táxi',custo:52.72},
+    {id:'5-12',data:'24/05',desc:'Kar Wua',cat:'Jantar fora',custo:141.00},
+    {id:'5-13',data:'26/05',desc:'Pda',cat:'Mercado',custo:165.35},
+    {id:'5-14',data:'26/05',desc:'Drogasil',cat:'Despesas médicas',custo:45.98},
+    {id:'5-15',data:'27/05',desc:'Conta energia',cat:'Eletricidade',custo:217.43},
+    {id:'5-16',data:'30/05',desc:'Ingresso niver Lu',cat:'Entretenimento',custo:35.70},
+    {id:'5-17',data:'31/05',desc:'Cervejas tarantino',cat:'Bebidas alcoólicas',custo:44.00},
+    {id:'5-18',data:'06/06',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4057.00},
+    {id:'5-19',data:'06/06',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'5-20',data:'10/06',desc:'Cartão Conjunto - Junho',cat:'Casa - Outros',custo:8219.83},
+  ]},
+  {mes:6,nome:'Junho',items:[
+    {id:'6-1',data:'01/07',desc:'Plano de Saúde',cat:'Despesas médicas',custo:670.17,excluido:true,tipo:'plano'},
+    {id:'6-2',data:'30/07',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'6-3',data:'05/06',desc:'C6 - Cartão Adicional',cat:'Impostos',custo:25.00},
+    {id:'6-4',data:'05/06',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'6-5',data:'05/06',desc:'Sonda',cat:'Mercado',custo:310.88},
+    {id:'6-6',data:'06/06',desc:'Hotel Sesc - parcela 1',cat:'Hotel',custo:238.00},
+    {id:'6-7',data:'06/06',desc:'A Bendita - Padaria',cat:'Mercado',custo:22.15},
+    {id:'6-8',data:'08/06',desc:'Yaki + breja',cat:'Jantar fora',custo:69.00},
+    {id:'6-9',data:'13/06',desc:'Ultragas',cat:'Aquecimento/gás',custo:133.00},
+    {id:'6-10',data:'14/06',desc:'Mega Sena',cat:'Presentes',custo:25.00},
+    {id:'6-11',data:'18/06',desc:'Mega Sena 2',cat:'Presentes',custo:30.00},
+    {id:'6-12',data:'27/06',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'6-13',data:'30/06',desc:'Sans Club - Águas',cat:'Mercado',custo:25.00},
+    {id:'6-14',data:'30/06',desc:'Hotel Sesc - parcela 2',cat:'Hotel',custo:238.00},
+    {id:'6-15',data:'05/07',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4057.00},
+    {id:'6-16',data:'07/07',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'6-17',data:'10/07',desc:'Cartão Conjunto - Julho',cat:'Casa - Outros',custo:6453.80},
+    {id:'6-18',data:'10/07',desc:'Cida',cat:'Serviços',custo:220.00},
+  ]},
+  {mes:7,nome:'Julho',items:[
+    {id:'7-1',data:'08/07',desc:'Z-Deli + Saj com Gabis',cat:'Jantar fora',custo:374.07},
+    {id:'7-2',data:'13/07',desc:'Kar war',cat:'Jantar fora',custo:98.00},
+    {id:'7-3',data:'19/07',desc:'Uber volta paraiso',cat:'Táxi',custo:28.00},
+    {id:'7-4',data:'24/07',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'7-5',data:'31/07',desc:'Hotel sesc - parcela 3',cat:'Hotel',custo:238.00},
+    {id:'7-6',data:'06/08',desc:'🍁',cat:'Entretenimento',custo:270.00},
+    {id:'7-7',data:'07/08',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'7-8',data:'07/08',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'7-9',data:'10/08',desc:'Cartão Conjunto - Agosto',cat:'Casa - Outros',custo:6122.31},
+  ]},
+  {mes:8,nome:'Agosto',items:[
+    {id:'8-1',data:'31/08',desc:'Plano de saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'8-2',data:'08/08',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'8-3',data:'17/08',desc:'Pizzaria Diavola',cat:'Jantar fora',custo:62.66},
+    {id:'8-4',data:'22/08',desc:'Esquina do Souza',cat:'Jantar fora',custo:100.57},
+    {id:'8-5',data:'22/08',desc:'Cida',cat:'Serviços',custo:220.01},
+    {id:'8-6',data:'24/08',desc:'Z-Deli',cat:'Jantar fora',custo:69.99},
+    {id:'8-7',data:'27/08',desc:'Civa Bus',cat:'Ônibus/trem',custo:915.80},
+    {id:'8-8',data:'31/08',desc:'Varal',cat:'Vida - Outros',custo:250.00},
+    {id:'8-9',data:'31/08',desc:'Kiro + Almoço',cat:'Jantar fora',custo:247.50},
+    {id:'8-10',data:'04/09',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'8-11',data:'04/09',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'8-12',data:'25/09',desc:'Cartão Conjunto',cat:'Casa - Outros',custo:7014.52},
+  ]},
+  {mes:9,nome:'Setembro',items:[
+    {id:'9-1',data:'30/09',desc:'Plano de saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'9-2',data:'03/09',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'9-3',data:'03/09',desc:'Hotel Sesc (4/5)',cat:'Hotel',custo:238.00},
+    {id:'9-4',data:'24/09',desc:'Peru',cat:'Entretenimento',custo:193.24},
+    {id:'9-5',data:'07/10',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4000.00},
+    {id:'9-6',data:'07/10',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'9-7',data:'10/10',desc:'Cartão Conjunto',cat:'Casa - Outros',custo:4831.22},
+  ]},
+  {mes:10,nome:'Outubro',items:[
+    {id:'10-1',data:'07/11',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'10-2',data:'02/10',desc:'Hotel Sesc (5/5)',cat:'Hotel',custo:238.00},
+    {id:'10-3',data:'02/10',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'10-4',data:'07/10',desc:'Uber volta mercado',cat:'Mercado',custo:10.00},
+    {id:'10-5',data:'16/10',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'10-6',data:'18/10',desc:'Rolê vale tudo',cat:'Comidas e bebidas',custo:86.56},
+    {id:'10-7',data:'18/10',desc:'Pagamentos no Cartão Conjunto (Errados)',cat:'Casa - Outros',custo:80.51},
+    {id:'10-8',data:'24/10',desc:'Táxi - Rock The Mountain',cat:'Táxi',custo:150.00},
+    {id:'10-9',data:'25/10',desc:'Roupitchas',cat:'Vestuário',custo:135.00},
+    {id:'10-10',data:'25/10',desc:'🍁',cat:'Entretenimento',custo:450.00},
+    {id:'10-11',data:'29/10',desc:'Roupas brechó devolução',cat:'Vestuário',custo:80.00},
+    {id:'10-12',data:'31/10',desc:'Táxi - Rock The Mountain',cat:'Táxi',custo:150.00},
+    {id:'10-13',data:'31/10',desc:'Almoço rildy sats',cat:'Jantar fora',custo:120.00},
+    {id:'10-14',data:'31/10',desc:'Uber chegada rildy',cat:'Táxi',custo:18.94},
+    {id:'10-15',data:'05/11',desc:'Barco paraty (sinal)',cat:'Transporte',custo:120.00},
+    {id:'10-16',data:'07/11',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'10-17',data:'07/11',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'10-18',data:'10/11',desc:'Cartão Conjunto',cat:'Casa - Outros',custo:3502.83},
+  ]},
+  {mes:11,nome:'Novembro',items:[
+    {id:'11-1',data:'30/11',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'11-2',data:'14/11',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'11-3',data:'29/11',desc:'Jantar - Lu e Coelho',cat:'Jantar fora',custo:129.60},
+    {id:'11-4',data:'08/12',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'11-5',data:'08/12',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'11-6',data:'08/12',desc:'Airbnb paraty (2/3)',cat:'Hotel',custo:566.66},
+    {id:'11-7',data:'10/12',desc:'Cartão Conjunto',cat:'Casa - Outros',custo:4774.57},
+  ]},
+  {mes:12,nome:'Dezembro',items:[
+    {id:'12-1',data:'31/12',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'12-2',data:'03/12',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'12-3',data:'05/12',desc:'Mundo Cabeleireiro - Xampu + Cond',cat:'Vida - Outros',custo:99.99},
+    {id:'12-4',data:'08/12',desc:'🍁',cat:'Entretenimento',custo:500.00},
+    {id:'12-5',data:'09/12',desc:'Havaianas (cartao conjunto)',cat:'Mercado',custo:18.50},
+    {id:'12-6',data:'19/12',desc:'Cida - Diária + Caixinha',cat:'Serviços',custo:440.00},
+    {id:'12-7',data:'20/12',desc:'Uber ida e volta roça',cat:'Táxi',custo:85.36},
+    {id:'12-8',data:'26/12',desc:'Bolão Mega',cat:'Serviços',custo:80.00},
+    {id:'12-9',data:'05/01',desc:'Defrost',cat:'Mercado',custo:83.50},
+    {id:'12-10',data:'07/01',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'12-11',data:'07/01',desc:'Condomínio',cat:'Aluguel',custo:380.00},
+    {id:'12-12',data:'10/01',desc:'Cartão Conjunto',cat:'Casa - Outros',custo:6144.44},
+  ]},
+];
+
+// Estado de exclusão: mapa id -> bool
+const estado = {};
+RAW.forEach(m => m.items.forEach(i => { estado[i.id] = i.excluido || false; }));
+
+let mesAtivo = 1;
+let calculado = [];
+
+function fmt(v) {
+  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function calcular(naraSal, michelSal) {
+  const total = naraSal + michelSal;
+  const naraPct = naraSal / total;
+  const michelPct = michelSal / total;
+  let acumulado = 0, totalBruto = 0;
+  return RAW.map(r => {
+    const ativos = r.items.filter(i => !estado[i.id]);
+    const totalMes = ativos.reduce((a, i) => a + i.custo, 0);
+    const michelDeveria = totalMes * michelPct;
+    const diferenca = michelDeveria - (totalMes / 2);
+    totalBruto += diferenca;
+    acumulado = acumulado * (1 + CDI[r.mes]) + diferenca;
+    return { mes: r.mes, nome: r.nome, items: r.items, total: totalMes, michelDeveria, naraDeveria: totalMes * naraPct, diferenca, totalBrutoAcum: totalBruto, rendAcum: acumulado, naraPct, michelPct };
+  });
+}
+
+function recalcular() {
+  const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+  calculado = calcular(n, m);
+  renderMetrics();
+  renderResumo();
+  renderMensal();
+  renderDespesas(mesAtivo);
+}
+
+function toggleItem(id) {
+  estado[id] = !estado[id];
+  recalcular();
+}
+
+function renderMetrics() {
+  const ultimo = calculado[calculado.length - 1];
+  const totalGasto = calculado.reduce((a, r) => a + r.total, 0);
+  document.getElementById('m-total').textContent = fmt(totalGasto);
+  document.getElementById('m-bruto').textContent = fmt(ultimo.totalBrutoAcum);
+  document.getElementById('m-pct').textContent = (ultimo.michelPct * 100).toFixed(1) + '% vs 50%';
+  document.getElementById('m-cdi').textContent = fmt(ultimo.rendAcum);
+  document.getElementById('m-rend').textContent = 'rendimento: ' + fmt(ultimo.rendAcum - ultimo.totalBrutoAcum);
+}
+
+function renderResumo() {
+  const ultimo = calculado[calculado.length - 1];
+  const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+
+  document.getElementById('resumo-prop').innerHTML = `
+    <div class="resumo-row"><span class="rkey">Renda Nara</span><span class="rval">${fmt(n)} / mês</span></div>
+    <div class="resumo-row"><span class="rkey">Renda Michel</span><span class="rval">${fmt(m)} / mês</span></div>
+    <div class="resumo-row"><span class="rkey">% justa Nara</span><span class="rval">${(ultimo.naraPct*100).toFixed(1)}%</span></div>
+    <div class="resumo-row"><span class="rkey">% justa Michel</span><span class="rval">${(ultimo.michelPct*100).toFixed(1)}%</span></div>
+  `;
+
+  document.getElementById('resumo-final').innerHTML = `
+    <div class="resumo-row"><span class="rkey">Michel deve (bruto)</span><span class="rval green">${fmt(ultimo.totalBrutoAcum)}</span></div>
+    <div class="resumo-row"><span class="rkey">Rendimento perdido CDI</span><span class="rval green">${fmt(ultimo.rendAcum - ultimo.totalBrutoAcum)}</span></div>
+    <div class="resumo-row highlight"><span class="rkey" style="color:var(--green)">Total com rendimento</span><span class="rval">${fmt(ultimo.rendAcum)}</span></div>
+  `;
+
+  // Excluídos
+  const excluidos = [];
+  RAW.forEach(r => r.items.forEach(i => {
+    if (estado[i.id]) excluidos.push({...i, nomeMes: r.nome});
+  }));
+
+  if (excluidos.length === 0) {
+    document.getElementById('resumo-excluidos').innerHTML = '<div class="empty-excluidos">nenhum item excluído além dos padrões.</div>';
+  } else {
+    document.getElementById('resumo-excluidos').innerHTML = excluidos.map(e => `
+      <div class="excluido-item">
+        <div class="ei-left">
+          <span class="ei-mes">${e.nomeMes}</span>
+          <span>${e.desc}</span>
+          <span class="badge badge-${e.tipo === 'plano' ? 'plano' : e.tipo === 'individual' ? 'individual' : 'excluido'}">${e.tipo === 'plano' ? 'plano' : e.tipo === 'individual' ? 'individual' : 'excluído'}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="ei-val">${fmt(e.custo)}</span>
+          <button class="toggle-btn restore" onclick="toggleItem('${e.id}')">restaurar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderMensal() {
+  let html = `<thead><tr>
+    <th>Mês</th>
+    <th class="val">Gasto total</th>
+    <th class="val">Michel deveria</th>
+    <th class="val">Diferença mês</th>
+    <th class="val">Bruto acum.</th>
+    <th class="val">C/ CDI</th>
+  </tr></thead><tbody>`;
+
+  calculado.forEach(r => {
+    html += `<tr>
+      <td>${r.nome}</td>
+      <td class="val">${fmt(r.total)}</td>
+      <td class="val">${fmt(r.michelDeveria)}</td>
+      <td class="val green">${fmt(r.diferenca)}</td>
+      <td class="val">${fmt(r.totalBrutoAcum)}</td>
+      <td class="val green">${fmt(r.rendAcum)}</td>
+    </tr>`;
+  });
+
+  const ultimo = calculado[calculado.length - 1];
+  html += `<tr class="total-row">
+    <td>Total</td>
+    <td class="val">${fmt(calculado.reduce((a,r)=>a+r.total,0))}</td>
+    <td class="val">—</td>
+    <td class="val green">${fmt(ultimo.totalBrutoAcum)}</td>
+    <td class="val green">${fmt(ultimo.totalBrutoAcum)}</td>
+    <td class="val green">${fmt(ultimo.rendAcum)}</td>
+  </tr></tbody>`;
+
+  document.getElementById('mensal-table').innerHTML = html;
+}
+
+function renderDespesas(mes) {
+  mesAtivo = mes;
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.mes) === mes));
+  const r = calculado.find(x => x.mes === mes);
+  if (!r) return;
+
+  document.getElementById('despesa-header').innerHTML = `
+    <h3>${r.nome} 2025</h3>
+    <div class="dh-stats">
+      <div class="dh-stat"><div class="dsl">total compartilhado</div><div class="dsv">${fmt(r.total)}</div></div>
+      <div class="dh-stat"><div class="dsl">michel deveria pagar</div><div class="dsv">${fmt(r.michelDeveria)}</div></div>
+      <div class="dh-stat"><div class="dsl">diferença do mês</div><div class="dsv green">${fmt(r.diferenca)}</div></div>
+    </div>
+  `;
+
+  let html = `<thead><tr>
+    <th>Data</th><th>Descrição</th><th>Categoria</th><th class="val">Valor</th><th>Ação</th>
+  </tr></thead><tbody>`;
+
+  r.items.forEach(item => {
+    const excl = estado[item.id];
+    const tipoLabel = item.tipo === 'plano' ? 'plano' : item.tipo === 'individual' ? 'individual' : 'excluído';
+    const tipoBadge = item.tipo === 'plano' ? 'badge-plano' : item.tipo === 'individual' ? 'badge-individual' : 'badge-excluido';
+    html += `<tr class="${excl ? 'excluida' : ''}">
+      <td>${item.data}</td>
+      <td>${item.desc}${excl ? ` <span class="badge ${tipoBadge}">${tipoLabel}</span>` : ''}</td>
+      <td>${item.cat}</td>
+      <td class="val">${fmt(item.custo)}</td>
+      <td class="act">
+        <button class="toggle-btn ${excl ? 'restore' : ''}" onclick="toggleItem('${item.id}')">
+          ${excl ? 'restaurar' : 'excluir'}
+        </button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody>';
+  document.getElementById('despesa-table').innerHTML = html;
+}
+
+function buildMonthNav() {
+  document.getElementById('month-nav').innerHTML = MESES.map((m, i) =>
+    `<button class="month-btn ${i===0?'active':''}" data-mes="${i+1}" onclick="renderDespesas(${i+1})">${m}</button>`
+  ).join('');
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── LOGIN ──────────────────────────────────────────────────────────────────
+
+const USERS = { michel: 'Noixenosso_701', nara: 'Noixenosso_701' };
+let currentUser = null;
+
+function tentarLogin() {
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err  = document.getElementById('login-error');
+  if (USERS[user] && USERS[user] === pass) {
+    currentUser = user;
+    document.getElementById('login-overlay').style.display = 'none';
+    err.style.display = 'none';
+    initFirebase();
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+['login-user','login-pass'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') tentarLogin();
+  });
+});
+
+// ─── FIREBASE + DIVISÃO DE BENS ─────────────────────────────────────────────
+
+// ⚠️  Após criar o projeto no Firebase, substitua os valores abaixo
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDClKUhJg7zyTCUkOcKlaRvIA1Xghs-J8Q",
+  authDomain:        "splitwise-bens.firebaseapp.com",
+  databaseURL:       "https://splitwise-bens-default-rtdb.firebaseio.com",
+  projectId:         "splitwise-bens",
+  storageBucket:     "splitwise-bens.firebasestorage.app",
+  messagingSenderId: "1071776677506",
+  appId:             "1:1071776677506:web:e2176c4e77ccaf7612be9b"
+};
+
+let db   = null;
+let bens = [];
+
+function initFirebase() {
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    db.ref('bens').on('value', snapshot => {
+      const data = snapshot.val();
+      bens = data ? Object.values(data).sort((a,b) => a.ts - b.ts) : [];
+      renderBens();
+    });
+    mostrarSyncBar('conectado · sync em tempo real ✓');
+  } catch(e) {
+    console.warn('Firebase não configurado, usando localStorage:', e);
+    bens = JSON.parse(localStorage.getItem('bens-fallback') || '[]');
+    renderBens();
+    mostrarSyncBar('⚠ Firebase não configurado — dados só locais');
+  }
+}
+
+function fmtBens(v) {
+  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function renderBens() {
+  const totalMichel = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
+  const totalNara   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
+  const cntMichel   = bens.filter(b=>b.dono==='michel').length;
+  const cntNara     = bens.filter(b=>b.dono==='nara').length;
+  const grand = totalMichel + totalNara;
+  const pctM = grand > 0 ? Math.round((totalMichel/grand)*100) : 50;
+  const pctN = 100 - pctM;
+
+  document.getElementById('bens-total-michel').textContent = fmtBens(totalMichel);
+  document.getElementById('bens-total-nara').textContent   = fmtBens(totalNara);
+  document.getElementById('bens-count-michel').textContent = cntMichel + (cntMichel===1?' bem':' bens');
+  document.getElementById('bens-count-nara').textContent   = cntNara + (cntNara===1?' bem':' bens');
+  document.getElementById('bens-bar').style.width = pctM + '%';
+  document.getElementById('bens-pct-michel').textContent = 'Michel: ' + pctM + '%';
+  document.getElementById('bens-pct-nara').textContent   = 'Nara: ' + pctN + '%';
+
+  const tbody = document.getElementById('bens-lista');
+  if (bens.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">nenhum bem adicionado ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = bens.map(b => `
+    <tr>
+      <td>${escHtml(b.nome)}</td>
+      <td class="val">${fmtBens(b.valor)}</td>
+      <td class="val">
+        <span style="padding:2px 9px;border-radius:4px;font-size:0.7rem;font-family:var(--mono);
+          background:${b.dono==='nara'?'var(--green-bg)':'var(--surface2)'};
+          color:${b.dono==='nara'?'var(--green)':'var(--text-muted)'}">
+          ${b.dono === 'nara' ? 'Nara' : 'Michel'}
+        </span>
+      </td>
+      <td style="text-align:right">
+        <button class="toggle-btn" onclick="removerBem('${b.id}')">remover</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function adicionarBem() {
+  const nome  = document.getElementById('bem-nome').value.trim();
+  const valor = parseFloat(document.getElementById('bem-valor').value);
+  const dono  = document.getElementById('bem-dono').value;
+  if (!nome)  { alert('Informe o nome do bem.'); return; }
+  if (isNaN(valor) || valor < 0) { alert('Informe um valor válido.'); return; }
+  const id  = 'b' + Date.now();
+  const novo = { id, nome, valor, dono, ts: Date.now(), addedBy: currentUser };
+  document.getElementById('bem-nome').value  = '';
+  document.getElementById('bem-valor').value = '';
+  document.getElementById('bem-nome').focus();
+  if (db) {
+    await db.ref('bens/' + id).set(novo);
+  } else {
+    bens.push(novo);
+    localStorage.setItem('bens-fallback', JSON.stringify(bens));
+    renderBens();
+  }
+}
+
+async function removerBem(id) {
+  if (!confirm('Remover este bem?')) return;
+  if (db) {
+    await db.ref('bens/' + id).remove();
+  } else {
+    bens = bens.filter(b => b.id !== id);
+    localStorage.setItem('bens-fallback', JSON.stringify(bens));
+    renderBens();
+  }
+}
+
+function mostrarSyncBar(msg) {
+  const bar = document.getElementById('bens-sync-bar');
+  bar.textContent = '🔄 ' + msg;
+  bar.style.display = 'block';
+  clearTimeout(bar._t);
+  bar._t = setTimeout(() => { bar.style.display = 'none'; }, 4000);
+}
+
+function exportarBensCSV() {
+  const rows = [['Bem','Valor (R$)','Quem fica']];
+  bens.forEach(b => rows.push([b.nome, b.valor.toFixed(2), b.dono === 'nara' ? 'Nara' : 'Michel']));
+  const tM = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
+  const tN = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
+  rows.push([],[`TOTAL Michel`,tM.toFixed(2),''],[`TOTAL Nara`,tN.toFixed(2),'']);
+  const csv = rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='divisao-bens.csv'; a.click();
+}
+
+// ─── FIM DIVISÃO DE BENS ────────────────────────────────────────────────────
+
+buildMonthNav();
+recalcular();
+</script>
+</body>
+</html>
