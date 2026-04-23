@@ -669,11 +669,22 @@ function recalcular() {
   renderMensal();
   renderDespesas(mesAtivo);
   renderConsolidado();
+  // Salva salários no Firebase
+  if (db) db.ref('salarios').set({ nara: n, michel: m });
 }
 
 function toggleItem(id) {
   estado[id] = !estado[id];
-  recalcular();
+  // Salva exclusões no Firebase (só as que diferem do default)
+  if (db) {
+    const exclusoes = {};
+    RAW.forEach(m => m.items.forEach(i => {
+      const defaultVal = i.excluido || false;
+      if (estado[i.id] !== defaultVal) exclusoes[i.id] = estado[i.id];
+    }));
+    db.ref('exclusoes').set(exclusoes);
+  }
+  recalcularSilencioso();
 }
 
 function renderMetrics() {
@@ -861,11 +872,34 @@ function initFirebase() {
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.database();
+
+    // Listener: bens
     db.ref('bens').on('value', snapshot => {
       const data = snapshot.val();
       bens = data ? Object.values(data).sort((a,b) => a.ts - b.ts) : [];
       renderBens();
     });
+
+    // Listener: salários
+    db.ref('salarios').on('value', snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.nara   !== undefined) document.getElementById('sal-nara').value   = data.nara;
+        if (data.michel !== undefined) document.getElementById('sal-michel').value = data.michel;
+        recalcularSilencioso();
+      }
+    });
+
+    // Listener: exclusões
+    db.ref('exclusoes').on('value', snapshot => {
+      const data = snapshot.val() || {};
+      // Reseta estado para os defaults do RAW
+      RAW.forEach(m => m.items.forEach(i => { estado[i.id] = i.excluido || false; }));
+      // Aplica exclusões salvas
+      Object.keys(data).forEach(id => { if (estado[id] !== undefined) estado[id] = data[id]; });
+      recalcularSilencioso();
+    });
+
     mostrarSyncBar('conectado · sync em tempo real ✓');
   } catch(e) {
     console.warn('Firebase não configurado, usando localStorage:', e);
@@ -873,6 +907,18 @@ function initFirebase() {
     renderBens();
     mostrarSyncBar('⚠ Firebase não configurado — dados só locais');
   }
+}
+
+// Recalcula sem salvar no Firebase (usado pelos listeners para evitar loop)
+function recalcularSilencioso() {
+  const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+  calculado = calcular(n, m);
+  renderMetrics();
+  renderResumo();
+  renderMensal();
+  renderDespesas(mesAtivo);
+  renderConsolidado();
 }
 
 function fmtBens(v) {
