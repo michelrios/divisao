@@ -232,7 +232,7 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
     </div>
     <div class="input-group">
       <label>Salário médio — Michel</label>
-      <input type="number" id="sal-michel" value="20000">
+      <input type="number" id="sal-michel" value="20600">
     </div>
     <button class="recalc-btn" onclick="recalcular()">↺ recalcular</button>
   </div>
@@ -662,7 +662,7 @@ function calcular(naraSal, michelSal) {
 
 function recalcular() {
   const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
-  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20600;
   calculado = calcular(n, m);
   renderMetrics();
   renderResumo();
@@ -700,7 +700,7 @@ function renderMetrics() {
 function renderResumo() {
   const ultimo = calculado[calculado.length - 1];
   const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
-  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20600;
 
   document.getElementById('resumo-prop').innerHTML = `
     <div class="resumo-row"><span class="rkey">Renda Nara</span><span class="rval">${fmt(n)} / mês</span></div>
@@ -912,7 +912,7 @@ function initFirebase() {
 // Recalcula sem salvar no Firebase (usado pelos listeners para evitar loop)
 function recalcularSilencioso() {
   const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
-  const m = parseFloat(document.getElementById('sal-michel').value) || 20000;
+  const m = parseFloat(document.getElementById('sal-michel').value) || 20600;
   calculado = calcular(n, m);
   renderMetrics();
   renderResumo();
