@@ -260,6 +260,7 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
     <button class="tab" onclick="showTab('mensal', this)">mês a mês</button>
     <button class="tab" onclick="showTab('despesas', this)">despesas</button>
     <button class="tab" onclick="showTab('bens', this)">divisão de bens</button>
+    <button class="tab" onclick="showTab('consolidado', this)">consolidado</button>
   </div>
 
   <!-- RESUMO -->
@@ -285,28 +286,17 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
   <div id="tab-bens" class="section">
     <div id="bens-sync-bar" class="info-bar" style="display:none"></div>
 
+    <!-- Totais: quanto cada um deve ao outro -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
       <div class="metric" style="border-radius:10px;border:1px solid var(--border-strong);">
-        <div class="mlabel">Michel fica com</div>
+        <div class="mlabel">Michel deve à Nara (50% dos seus bens)</div>
         <div class="mvalue" id="bens-total-michel">R$ 0,00</div>
         <div class="msub" id="bens-count-michel">0 bens</div>
       </div>
       <div class="metric" style="border-radius:10px;border:1px solid var(--border-strong);">
-        <div class="mlabel">Nara fica com</div>
+        <div class="mlabel">Nara deve ao Michel (50% dos seus bens)</div>
         <div class="mvalue green" id="bens-total-nara">R$ 0,00</div>
         <div class="msub" id="bens-count-nara">0 bens</div>
-      </div>
-    </div>
-
-    <!-- Barra de proporção -->
-    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
-      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:0.75rem;">proporção</div>
-      <div style="height:8px;border-radius:8px;background:var(--surface2);overflow:hidden;margin-bottom:8px;">
-        <div id="bens-bar" style="height:100%;width:50%;background:linear-gradient(90deg,#1A1816,var(--green));border-radius:8px;transition:width 0.4s ease;"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-family:var(--mono);color:var(--text-muted);">
-        <span id="bens-pct-michel">Michel: 50%</span>
-        <span id="bens-pct-nara" style="color:var(--green)">Nara: 50%</span>
       </div>
     </div>
 
@@ -334,19 +324,27 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
       <div id="bens-saving" style="font-size:0.7rem;font-family:var(--mono);color:var(--text-faint);margin-top:8px;display:none;">salvando…</div>
     </div>
 
+    <!-- Filtro -->
+    <div style="display:flex;gap:6px;margin-bottom:1rem;">
+      <button class="month-btn active" id="filtro-todos" onclick="setFiltro('todos', this)">todos</button>
+      <button class="month-btn" id="filtro-michel" onclick="setFiltro('michel', this)">Michel</button>
+      <button class="month-btn" id="filtro-nara" onclick="setFiltro('nara', this)">Nara</button>
+    </div>
+
     <!-- Lista -->
     <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;">
       <table class="mensal-table" style="border-radius:0">
         <thead>
           <tr>
             <th style="text-align:left">Bem</th>
-            <th class="val">Valor</th>
+            <th class="val">Valor do bem</th>
             <th class="val">Quem fica</th>
+            <th class="val">Valor 50%</th>
             <th style="text-align:right;width:80px">Ação</th>
           </tr>
         </thead>
         <tbody id="bens-lista">
-          <tr><td colspan="4" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">nenhum bem adicionado ainda.</td></tr>
+          <tr><td colspan="5" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">nenhum bem adicionado ainda.</td></tr>
         </tbody>
       </table>
     </div>
@@ -355,6 +353,71 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
       <button class="recalc-btn" onclick="exportarBensCSV()" style="background:transparent;color:var(--text);font-size:0.72rem;">⬇ exportar CSV</button>
       <button class="recalc-btn" onclick="window.print()" style="background:transparent;color:var(--text);font-size:0.72rem;">🖨 imprimir</button>
     </div>
+  </div>
+
+  <!-- CONSOLIDADO -->
+  <div id="tab-consolidado" class="section">
+
+    <!-- Bloco 1: Proporcionalidade -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">① proporcionalidade de gastos</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;">
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Michel deve (c/ CDI)</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;color:var(--green);" id="cons-prop-valor">—</div>
+        </div>
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">a quem</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-prop-para">Nara</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);">valor calculado pela aba de proporcionalidade · inclui CDI 102%</div>
+    </div>
+
+    <!-- Bloco 2: Bens -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">② divisão de bens</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;">
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Michel deve à Nara (50%)</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-bens-michel">—</div>
+        </div>
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Nara deve ao Michel (50%)</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-bens-nara">—</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-bens-diff">diferença entre os bens: —</div>
+    </div>
+
+    <!-- Bloco 3: Saldo final simplificado -->
+    <div style="background:var(--surface);border:2px solid var(--border-strong);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">③ saldo final consolidado</div>
+
+      <!-- Linha explicativa detalhada -->
+      <div style="background:var(--surface2);border-radius:8px;padding:0.9rem 1.1rem;margin-bottom:1rem;">
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey">Proporcionalidade (Michel → Nara)</span>
+          <span class="rval" id="cons-det-prop" style="font-family:var(--mono);">—</span>
+        </div>
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey">Bens: diferença de valor (quem levou mais)</span>
+          <span class="rval" id="cons-det-bens" style="font-family:var(--mono);">—</span>
+        </div>
+        <div class="resumo-row" style="padding-top:4px;">
+          <span class="rkey" style="font-weight:500;">Transferência líquida</span>
+          <span class="rval" id="cons-det-total" style="font-family:var(--mono);font-weight:500;">—</span>
+        </div>
+      </div>
+
+      <!-- Resultado final destacado -->
+      <div id="cons-resultado" style="border-radius:8px;padding:1.1rem 1.25rem;text-align:center;">
+        <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;opacity:0.7;" id="cons-res-label">calculando…</div>
+        <div style="font-size:2rem;font-family:var(--mono);font-weight:300;letter-spacing:-0.02em;" id="cons-res-valor">—</div>
+        <div style="font-size:0.8rem;font-family:var(--mono);margin-top:4px;opacity:0.8;" id="cons-res-dir">—</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- MENSAL -->
@@ -605,6 +668,7 @@ function recalcular() {
   renderResumo();
   renderMensal();
   renderDespesas(mesAtivo);
+  renderConsolidado();
 }
 
 function toggleItem(id) {
@@ -815,39 +879,58 @@ function fmtBens(v) {
   return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
+let filtroAtivo = 'todos';
+
+function setFiltro(f, btn) {
+  filtroAtivo = f;
+  document.querySelectorAll('#filtro-todos,#filtro-michel,#filtro-nara').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBens();
+}
+
 function renderBens() {
-  const totalMichel = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
-  const totalNara   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
-  const cntMichel   = bens.filter(b=>b.dono==='michel').length;
-  const cntNara     = bens.filter(b=>b.dono==='nara').length;
-  const grand = totalMichel + totalNara;
-  const pctM = grand > 0 ? Math.round((totalMichel/grand)*100) : 50;
-  const pctN = 100 - pctM;
+  // Totais sempre sobre TODOS os bens (não filtrados)
+  const michelDeve50 = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+(b.valor/2),0);
+  const naraDeve50   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+(b.valor/2),0);
+  const cntMichel    = bens.filter(b=>b.dono==='michel').length;
+  const cntNara      = bens.filter(b=>b.dono==='nara').length;
 
-  document.getElementById('bens-total-michel').textContent = fmtBens(totalMichel);
-  document.getElementById('bens-total-nara').textContent   = fmtBens(totalNara);
+  document.getElementById('bens-total-michel').textContent = fmtBens(michelDeve50);
+  document.getElementById('bens-total-nara').textContent   = fmtBens(naraDeve50);
   document.getElementById('bens-count-michel').textContent = cntMichel + (cntMichel===1?' bem':' bens');
-  document.getElementById('bens-count-nara').textContent   = cntNara + (cntNara===1?' bem':' bens');
-  document.getElementById('bens-bar').style.width = pctM + '%';
-  document.getElementById('bens-pct-michel').textContent = 'Michel: ' + pctM + '%';
-  document.getElementById('bens-pct-nara').textContent   = 'Nara: ' + pctN + '%';
+  document.getElementById('bens-count-nara').textContent   = cntNara   + (cntNara===1?' bem':' bens');
 
+  renderConsolidado();
+
+  // Lista filtrada
+  const lista = filtroAtivo === 'todos' ? bens : bens.filter(b => b.dono === filtroAtivo);
   const tbody = document.getElementById('bens-lista');
-  if (bens.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">nenhum bem adicionado ainda.</td></tr>';
+
+  if (lista.length === 0) {
+    const msg = filtroAtivo === 'todos' ? 'nenhum bem adicionado ainda.' : `nenhum bem para ${filtroAtivo === 'michel' ? 'Michel' : 'Nara'}.`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-faint);font-family:var(--mono);font-size:0.8rem;padding:2rem">${msg}</td></tr>`;
     return;
   }
-  tbody.innerHTML = bens.map(b => `
+
+  const inlineInput = `padding:5px 8px;border:1px solid var(--border-strong);border-radius:5px;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:0.82rem;outline:none;`;
+
+  tbody.innerHTML = lista.map(b => `
     <tr>
       <td>${escHtml(b.nome)}</td>
-      <td class="val">${fmtBens(b.valor)}</td>
       <td class="val">
-        <span style="padding:2px 9px;border-radius:4px;font-size:0.7rem;font-family:var(--mono);
-          background:${b.dono==='nara'?'var(--green-bg)':'var(--surface2)'};
-          color:${b.dono==='nara'?'var(--green)':'var(--text-muted)'}">
-          ${b.dono === 'nara' ? 'Nara' : 'Michel'}
-        </span>
+        <input type="number" value="${b.valor}" min="0" step="0.01"
+          style="${inlineInput}width:110px;text-align:right;"
+          onchange="editarBem('${b.id}', 'valor', parseFloat(this.value))"
+          onblur="editarBem('${b.id}', 'valor', parseFloat(this.value))">
       </td>
+      <td class="val">
+        <select onchange="editarBem('${b.id}', 'dono', this.value)"
+          style="${inlineInput}">
+          <option value="michel" ${b.dono==='michel'?'selected':''}>Michel</option>
+          <option value="nara"   ${b.dono==='nara'  ?'selected':''}>Nara</option>
+        </select>
+      </td>
+      <td class="val" style="color:var(--text-muted)">${fmtBens(b.valor / 2)}</td>
       <td style="text-align:right">
         <button class="toggle-btn" onclick="removerBem('${b.id}')">remover</button>
       </td>
@@ -890,6 +973,19 @@ async function removerBem(id) {
   }
 }
 
+async function editarBem(id, campo, valor) {
+  if (campo === 'valor' && (isNaN(valor) || valor < 0)) return;
+  const bem = bens.find(b => b.id === id);
+  if (!bem) return;
+  bem[campo] = valor;
+  if (db) {
+    await db.ref('bens/' + id + '/' + campo).set(valor);
+  } else {
+    localStorage.setItem('bens-fallback', JSON.stringify(bens));
+    renderBens();
+  }
+}
+
 function mostrarSyncBar(msg) {
   const bar = document.getElementById('bens-sync-bar');
   bar.textContent = '🔄 ' + msg;
@@ -899,18 +995,88 @@ function mostrarSyncBar(msg) {
 }
 
 function exportarBensCSV() {
-  const rows = [['Bem','Valor (R$)','Quem fica']];
-  bens.forEach(b => rows.push([b.nome, b.valor.toFixed(2), b.dono === 'nara' ? 'Nara' : 'Michel']));
-  const tM = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
-  const tN = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
-  rows.push([],[`TOTAL Michel`,tM.toFixed(2),''],[`TOTAL Nara`,tN.toFixed(2),'']);
+  const rows = [['Bem','Valor do bem (R$)','Quem fica','Valor 50% (R$)']];
+  bens.forEach(b => rows.push([b.nome, b.valor.toFixed(2), b.dono === 'nara' ? 'Nara' : 'Michel', (b.valor/2).toFixed(2)]));
+  const michelDeve = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+(b.valor/2),0);
+  const naraDeve   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+(b.valor/2),0);
+  rows.push([],[`Michel deve (50% dos seus bens)`,michelDeve.toFixed(2),'',''],[`Nara deve (50% dos seus bens)`,naraDeve.toFixed(2),'','']);
   const csv = rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download='divisao-bens.csv'; a.click();
 }
 
-// ─── FIM DIVISÃO DE BENS ────────────────────────────────────────────────────
+// ─── CONSOLIDADO ────────────────────────────────────────────────────────────
+
+function renderConsolidado() {
+  if (!calculado || calculado.length === 0) return;
+  const ultimo = calculado[calculado.length - 1];
+  const propMichelDeveNara = ultimo.rendAcum; // Michel deve à Nara pela proporcionalidade (c/ CDI)
+
+  // 50% de cada bem = o que quem ficou com ele deve ao outro
+  // Michel deve à Nara: soma dos 50% dos bens que ele ficou
+  // Nara deve ao Michel: soma dos 50% dos bens que ela ficou
+  const michelDeveBens = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+(b.valor/2),0);
+  const naraDeveBens   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+(b.valor/2),0);
+
+  // Saldo líquido de bens (do ponto de vista de Michel):
+  // positivo = Michel ainda deve à Nara após abate
+  // negativo = Nara deve ao Michel após abate
+  const saldoBens = michelDeveBens - naraDeveBens;
+
+  // Saldo total: proporcionalidade + saldo de bens
+  const saldoTotal = propMichelDeveNara + saldoBens;
+
+  // Bloco 1 — proporcionalidade
+  document.getElementById('cons-prop-valor').textContent = fmtBens(propMichelDeveNara);
+
+  // Bloco 2 — bens
+  const totalBensMichel = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
+  const totalBensNara   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
+  document.getElementById('cons-bens-michel').textContent = fmtBens(michelDeveBens);
+  document.getElementById('cons-bens-nara').textContent   = fmtBens(naraDeveBens);
+
+  const saldoBensLabel = saldoBens > 0.01
+    ? `Michel deve mais R$ ${fmtBens(saldoBens)} à Nara pelos bens`
+    : saldoBens < -0.01
+    ? `Nara deve mais R$ ${fmtBens(Math.abs(saldoBens))} ao Michel pelos bens`
+    : 'bens equilibrados entre os dois';
+  document.getElementById('cons-bens-diff').textContent = saldoBensLabel;
+
+  // Bloco 3 — detalhamento
+  document.getElementById('cons-det-prop').textContent  = fmtBens(propMichelDeveNara) + ' (Michel → Nara)';
+  const sinalBens = saldoBens >= 0 ? '+ ' : '− ';
+  document.getElementById('cons-det-bens').textContent  = sinalBens + fmtBens(Math.abs(saldoBens)) + (saldoBens >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)');
+  document.getElementById('cons-det-total').textContent = fmtBens(Math.abs(saldoTotal));
+
+  // Resultado final
+  const res      = document.getElementById('cons-resultado');
+  const resLabel = document.getElementById('cons-res-label');
+  const resValor = document.getElementById('cons-res-valor');
+  const resDir   = document.getElementById('cons-res-dir');
+
+  if (Math.abs(saldoTotal) < 0.01) {
+    res.style.background = 'var(--surface2)';
+    resLabel.textContent = 'situação';
+    resValor.textContent = 'Quites!';
+    resValor.style.color = 'var(--text)';
+    resDir.textContent   = 'nenhuma transferência necessária';
+  } else if (saldoTotal > 0) {
+    res.style.background = 'var(--green-bg)';
+    resLabel.textContent = 'Michel transfere para Nara';
+    resValor.textContent = fmtBens(saldoTotal);
+    resValor.style.color = 'var(--green)';
+    resDir.textContent   = '← uma única transferência simplificada';
+  } else {
+    res.style.background = 'var(--amber-bg)';
+    resLabel.textContent = 'Nara transfere para Michel';
+    resValor.textContent = fmtBens(Math.abs(saldoTotal));
+    resValor.style.color = 'var(--amber)';
+    resDir.textContent   = '→ uma única transferência simplificada';
+  }
+}
+
+// ─── FIM CONSOLIDADO ─────────────────────────────────────────────────────────
 
 buildMonthNav();
 recalcular();
