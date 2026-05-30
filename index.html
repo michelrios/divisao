@@ -371,7 +371,7 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
           <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-prop-para">Nara</div>
         </div>
       </div>
-      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop-sub">valor calculado pela aba de proporcionalidade · inclui CDI 2025 + CDI jan–mai/2026</div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop-sub">valor calculado pela aba de proporcionalidade · CDI 102% (2025 + jan–mai/2026)</div>
     </div>
 
     <!-- Bloco 2: Bens -->
@@ -661,7 +661,7 @@ function calcular(naraSal, michelSal) {
     const michelDeveria = totalMes * michelPct;
     const diferenca = michelDeveria - (totalMes / 2);
     totalBruto += diferenca;
-    acumulado = acumulado * (1 + CDI[r.mes]) + diferenca;
+    acumulado = acumulado * (1 + CDI[r.mes] * 1.02) + diferenca;
     return { mes: r.mes, nome: r.nome, items: r.items, total: totalMes, michelDeveria, naraDeveria: totalMes * naraPct, diferenca, totalBrutoAcum: totalBruto, rendAcum: acumulado, naraPct, michelPct };
   });
 }
@@ -675,9 +675,9 @@ function calcularCDI2026(saldoFinal2025) {
   Object.keys(CDI_2026).forEach(key => {
     const k = parseInt(key);
     const taxa = CDI_2026[k];
-    const rendimentoMes = acum * taxa;
-    acum = acum * (1 + taxa);
-    pctAcum = pctAcum * (1 + taxa);
+    const rendimentoMes = acum * taxa * 1.02;
+    acum = acum * (1 + taxa * 1.02);
+    pctAcum = pctAcum * (1 + taxa * 1.02);
     meses.push({
       key: k,
       label: CDI_2026_LABELS[k],
@@ -843,7 +843,7 @@ function renderMensal() {
         <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
           <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">CDI acumulado jan–mai</div>
           <div style="font-size:1.1rem;font-family:var(--mono);font-weight:300;color:var(--amber);">+${cdi2026.pctTotal.toFixed(2)}%</div>
-          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">mai/2026 estimado (1,07%)</div>
+          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">mai/2026 estimado (1,07% × 102%)</div>
         </div>
         <div style="background:var(--amber-bg);padding:0.9rem 1.1rem;">
           <div style="font-size:0.6rem;font-family:var(--mono);color:var(--amber);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">valor final com CDI 2026</div>
