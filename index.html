@@ -371,7 +371,7 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
           <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-prop-para">Nara</div>
         </div>
       </div>
-      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);">valor calculado pela aba de proporcionalidade · inclui CDI 102%</div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop-sub">valor calculado pela aba de proporcionalidade · inclui CDI 2025 + CDI jan–mai/2026</div>
     </div>
 
     <!-- Bloco 2: Bens -->
@@ -436,6 +436,12 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
 
 <script>
 const CDI = {1:0.01076,2:0.01057,3:0.01165,4:0.01048,5:0.01073,6:0.01034,7:0.01072,8:0.01119,9:0.01107,10:0.01082,11:0.01028,12:0.01074};
+
+// CDI 2026 — chaves 13–17 = jan–mai/2026
+// Fontes: debit.com.br (jan–abr oficial) | mai estimado (investidor10, dado até 22/05)
+const CDI_2026 = {13:0.0116, 14:0.0100, 15:0.0121, 16:0.0109, 17:0.0107};
+const CDI_2026_LABELS = {13:'Janeiro/2026',14:'Fevereiro/2026',15:'Março/2026',16:'Abril/2026',17:'Maio/2026 ⚠'};
+const CDI_2026_NOTAS  = {17:'estimado (mês não encerrado em 30/05/2026)'};
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 const RAW = [
@@ -660,6 +666,30 @@ function calcular(naraSal, michelSal) {
   });
 }
 
+// Calcula os meses de 2026 aplicando CDI sobre o saldo final de 2025
+// Sem novas despesas — apenas o CDI acumulando sobre o saldo existente
+function calcularCDI2026(saldoFinal2025) {
+  let acum = saldoFinal2025;
+  const meses = [];
+  let pctAcum = 1;
+  Object.keys(CDI_2026).forEach(key => {
+    const k = parseInt(key);
+    const taxa = CDI_2026[k];
+    const rendimentoMes = acum * taxa;
+    acum = acum * (1 + taxa);
+    pctAcum = pctAcum * (1 + taxa);
+    meses.push({
+      key: k,
+      label: CDI_2026_LABELS[k],
+      nota: CDI_2026_NOTAS[k] || null,
+      taxa,
+      rendimentoMes,
+      acumulado: acum
+    });
+  });
+  return { meses, saldoFinal: acum, pctTotal: (pctAcum - 1) * 100 };
+}
+
 function recalcular() {
   const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
   const m = parseFloat(document.getElementById('sal-michel').value) || 20600;
@@ -762,8 +792,32 @@ function renderMensal() {
   });
 
   const ultimo = calculado[calculado.length - 1];
+
+  // Linha separadora e meses de 2026
+  const cdi2026 = calcularCDI2026(ultimo.rendAcum);
+
+  html += `<tr style="background:var(--surface2);">
+    <td colspan="6" style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);padding:10px 14px;">
+      ── rendimento CDI jan–mai/2026 · sem novas despesas ──
+    </td>
+  </tr>`;
+
+  cdi2026.meses.forEach(m => {
+    html += `<tr style="background:var(--amber-bg);opacity:0.9;">
+      <td style="font-family:var(--mono);font-size:0.82rem;">
+        ${m.label}
+        ${m.nota ? `<span style="font-size:0.65rem;color:var(--amber);display:block;">${m.nota}</span>` : ''}
+      </td>
+      <td class="val" style="color:var(--text-faint)">—</td>
+      <td class="val" style="color:var(--text-faint)">—</td>
+      <td class="val" style="color:var(--amber)">${(m.taxa * 100).toFixed(2)}% CDI</td>
+      <td class="val" style="color:var(--text-faint)">—</td>
+      <td class="val" style="color:var(--amber)">${fmt(m.acumulado)}</td>
+    </tr>`;
+  });
+
   html += `<tr class="total-row">
-    <td>Total</td>
+    <td>Total 2025</td>
     <td class="val">${fmt(calculado.reduce((a,r)=>a+r.total,0))}</td>
     <td class="val">—</td>
     <td class="val green">${fmt(ultimo.totalBrutoAcum)}</td>
@@ -772,6 +826,43 @@ function renderMensal() {
   </tr></tbody>`;
 
   document.getElementById('mensal-table').innerHTML = html;
+
+  // Card resumo CDI 2026
+  const rendimento2026 = cdi2026.saldoFinal - ultimo.rendAcum;
+  const cardHtml = `
+    <div style="margin-top:1.5rem;background:var(--surface);border:2px solid var(--amber);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);margin-bottom:1rem;">
+        acerto CDI · jan–mai/2026 (até 30/05)
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:1rem;">
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">valor sem CDI 2026</div>
+          <div style="font-size:1.1rem;font-family:var(--mono);font-weight:300;">${fmt(ultimo.rendAcum)}</div>
+          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">saldo final dez/2025</div>
+        </div>
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">CDI acumulado jan–mai</div>
+          <div style="font-size:1.1rem;font-family:var(--mono);font-weight:300;color:var(--amber);">+${cdi2026.pctTotal.toFixed(2)}%</div>
+          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">mai/2026 estimado (1,07%)</div>
+        </div>
+        <div style="background:var(--amber-bg);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--amber);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">valor final com CDI 2026</div>
+          <div style="font-size:1.3rem;font-family:var(--mono);font-weight:300;color:var(--amber);">${fmt(cdi2026.saldoFinal)}</div>
+          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--amber);margin-top:3px;">rendimento: +${fmt(rendimento2026)}</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);">
+        fontes: debit.com.br (jan–abr/2026 oficiais) · investidor10.com.br (mai/2026 estimado até 22/05/2026)
+      </div>
+    </div>`;
+
+  // Remove card anterior se existir, insere novo
+  const oldCard = document.getElementById('cdi2026-card');
+  if (oldCard) oldCard.remove();
+  const wrapper = document.createElement('div');
+  wrapper.id = 'cdi2026-card';
+  wrapper.innerHTML = cardHtml;
+  document.getElementById('mensal-table').parentNode.appendChild(wrapper);
 }
 
 function renderDespesas(mes) {
@@ -1057,40 +1148,39 @@ function exportarBensCSV() {
 function renderConsolidado() {
   if (!calculado || calculado.length === 0) return;
   const ultimo = calculado[calculado.length - 1];
-  const propMichelDeveNara = ultimo.rendAcum; // Michel deve à Nara pela proporcionalidade (c/ CDI)
+
+  // Valor com CDI 2026 até 30/05 — esse é o valor real que Michel deve à Nara
+  const cdi2026 = calcularCDI2026(ultimo.rendAcum);
+  const propMichelDeveNara = cdi2026.saldoFinal;
+  const propSem2026 = ultimo.rendAcum;
 
   // 50% de cada bem = o que quem ficou com ele deve ao outro
-  // Michel deve à Nara: soma dos 50% dos bens que ele ficou
-  // Nara deve ao Michel: soma dos 50% dos bens que ela ficou
   const michelDeveBens = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+(b.valor/2),0);
   const naraDeveBens   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+(b.valor/2),0);
-
-  // Saldo líquido de bens (do ponto de vista de Michel):
-  // positivo = Michel ainda deve à Nara após abate
-  // negativo = Nara deve ao Michel após abate
   const saldoBens = michelDeveBens - naraDeveBens;
 
-  // Saldo total: proporcionalidade + saldo de bens
+  // Saldo total: proporcionalidade c/ CDI 2026 + saldo de bens
   const saldoTotal = propMichelDeveNara + saldoBens;
 
-  // Bloco 1 — proporcionalidade
+  // Bloco 1 — proporcionalidade (agora mostra valor com CDI 2026)
   document.getElementById('cons-prop-valor').textContent = fmtBens(propMichelDeveNara);
+  // Atualiza subtítulo do bloco 1 para deixar explícito
+  const propSubEl = document.getElementById('cons-prop-sub');
+  if (propSubEl) propSubEl.textContent = `sem CDI 2026: ${fmtBens(propSem2026)} · +${cdi2026.pctTotal.toFixed(2)}% jan–mai/2026`;
 
   // Bloco 2 — bens
-  const totalBensMichel = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+b.valor,0);
-  const totalBensNara   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+b.valor,0);
   document.getElementById('cons-bens-michel').textContent = fmtBens(michelDeveBens);
   document.getElementById('cons-bens-nara').textContent   = fmtBens(naraDeveBens);
 
   const saldoBensLabel = saldoBens > 0.01
-    ? `Michel deve mais R$ ${fmtBens(saldoBens)} à Nara pelos bens`
+    ? `Michel deve mais ${fmtBens(saldoBens)} à Nara pelos bens`
     : saldoBens < -0.01
-    ? `Nara deve mais R$ ${fmtBens(Math.abs(saldoBens))} ao Michel pelos bens`
+    ? `Nara deve mais ${fmtBens(Math.abs(saldoBens))} ao Michel pelos bens`
     : 'bens equilibrados entre os dois';
   document.getElementById('cons-bens-diff').textContent = saldoBensLabel;
 
   // Bloco 3 — detalhamento
-  document.getElementById('cons-det-prop').textContent  = fmtBens(propMichelDeveNara) + ' (Michel → Nara)';
+  document.getElementById('cons-det-prop').textContent  = fmtBens(propMichelDeveNara) + ' (c/ CDI jan–mai/2026)';
   const sinalBens = saldoBens >= 0 ? '+ ' : '− ';
   document.getElementById('cons-det-bens').textContent  = sinalBens + fmtBens(Math.abs(saldoBens)) + (saldoBens >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)');
   document.getElementById('cons-det-total').textContent = fmtBens(Math.abs(saldoTotal));
@@ -1112,13 +1202,13 @@ function renderConsolidado() {
     resLabel.textContent = 'Michel transfere para Nara';
     resValor.textContent = fmtBens(saldoTotal);
     resValor.style.color = 'var(--green)';
-    resDir.textContent   = '← uma única transferência simplificada';
+    resDir.textContent   = '← inclui proporcionalidade + CDI jan–mai/2026 + bens';
   } else {
     res.style.background = 'var(--amber-bg)';
     resLabel.textContent = 'Nara transfere para Michel';
     resValor.textContent = fmtBens(Math.abs(saldoTotal));
     resValor.style.color = 'var(--amber)';
-    resDir.textContent   = '→ uma única transferência simplificada';
+    resDir.textContent   = '→ inclui proporcionalidade + CDI jan–mai/2026 + bens';
   }
 }
 
