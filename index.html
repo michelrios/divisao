@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Splitwise — Proporcionalidade 2025</title>
+<title>Splitwise — Proporcionalidade 2025 · 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -202,7 +202,7 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
 <!-- LOGIN -->
 <div id="login-overlay">
   <div class="login-box">
-    <div class="login-label">Splitwise · 2025</div>
+    <div class="login-label">Splitwise · 2025–2026</div>
     <h2>Entrar</h2>
     <div class="field">
       <label>Usuário</label>
@@ -220,18 +220,18 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
 <div class="container">
 
   <header>
-    <div class="label">Splitwise · 2025</div>
+    <div class="label">Splitwise · 2025–2026</div>
     <h1>Proporcionalidade de gastos</h1>
     <p>Gastos compartilhados · CDI 102% · Clique em "excluir" em qualquer item para retirá-lo do cálculo</p>
   </header>
 
   <div class="inputs-row">
     <div class="input-group">
-      <label>Salário médio — Nara</label>
+      <label>Salário médio 2025 — Nara</label>
       <input type="number" id="sal-nara" value="11800">
     </div>
     <div class="input-group">
-      <label>Salário médio — Michel</label>
+      <label>Salário médio 2025 — Michel</label>
       <input type="number" id="sal-michel" value="20600">
     </div>
     <button class="recalc-btn" onclick="recalcular()">↺ recalcular</button>
@@ -239,17 +239,17 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
 
   <div class="metrics">
     <div class="metric">
-      <div class="mlabel">Total gasto conjunto</div>
+      <div class="mlabel">Total gasto conjunto · 2025</div>
       <div class="mvalue" id="m-total">—</div>
-      <div class="msub">sem itens individuais</div>
+      <div class="msub">sem itens individuais · quitado em 30/05/2026</div>
     </div>
     <div class="metric">
-      <div class="mlabel">Michel deve (bruto)</div>
+      <div class="mlabel">Michel deve 2025 (bruto)</div>
       <div class="mvalue green" id="m-bruto">—</div>
       <div class="msub" id="m-pct">—% vs 50/50</div>
     </div>
     <div class="metric">
-      <div class="mlabel">Total com CDI 102%</div>
+      <div class="mlabel">2025 com CDI 102%</div>
       <div class="mvalue green" id="m-cdi">—</div>
       <div class="msub" id="m-rend">rendimento: —</div>
     </div>
@@ -257,8 +257,10 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
 
   <div class="tabs">
     <button class="tab active" onclick="showTab('resumo', this)">resumo</button>
-    <button class="tab" onclick="showTab('mensal', this)">mês a mês</button>
-    <button class="tab" onclick="showTab('despesas', this)">despesas</button>
+    <button class="tab" onclick="showTab('mensal', this)">mês a mês · 2025</button>
+    <button class="tab" onclick="showTab('despesas', this)">despesas · 2025</button>
+    <button class="tab" onclick="showTab('mensal26', this)">mês a mês · 2026</button>
+    <button class="tab" onclick="showTab('despesas26', this)">despesas · 2026</button>
     <button class="tab" onclick="showTab('bens', this)">divisão de bens</button>
     <button class="tab" onclick="showTab('consolidado', this)">consolidado</button>
   </div>
@@ -358,12 +360,12 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
   <!-- CONSOLIDADO -->
   <div id="tab-consolidado" class="section">
 
-    <!-- Bloco 1: Proporcionalidade -->
+    <!-- Bloco 1: Proporcionalidade 2025 -->
     <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
-      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">① proporcionalidade de gastos</div>
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">① proporcionalidade 2025</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;">
         <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
-          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Michel deve (c/ CDI)</div>
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Michel deve (c/ CDI até mai/2026)</div>
           <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;color:var(--green);" id="cons-prop-valor">—</div>
         </div>
         <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
@@ -371,12 +373,28 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
           <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-prop-para">Nara</div>
         </div>
       </div>
-      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop-sub">valor calculado pela aba de proporcionalidade · CDI 102% (2025 + jan–mai/2026)</div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop-sub">—</div>
     </div>
 
-    <!-- Bloco 2: Bens -->
+    <!-- Bloco 2: Proporcionalidade 2026 -->
     <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
-      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">② divisão de bens</div>
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">② proporcionalidade 2026</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;">
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;" id="cons-prop26-label">Michel deve (c/ CDI)</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;color:var(--green);" id="cons-prop26-valor">—</div>
+        </div>
+        <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
+          <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">a quem</div>
+          <div style="font-size:1.2rem;font-family:var(--mono);font-weight:300;" id="cons-prop26-para">Nara</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-prop26-sub">—</div>
+    </div>
+
+    <!-- Bloco 3: Bens -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">③ divisão de bens</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;">
         <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
           <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Michel deve à Nara (50%)</div>
@@ -390,19 +408,32 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
       <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);" id="cons-bens-diff">diferença entre os bens: —</div>
     </div>
 
-    <!-- Bloco 3: Saldo final simplificado -->
-    <div style="background:var(--surface);border:2px solid var(--border-strong);border-radius:10px;padding:1.25rem;">
-      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">③ saldo final consolidado</div>
+    <!-- Bloco 4: Pagamentos já realizados -->
+    <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">④ pagamentos já realizados (fora do Splitwise)</div>
+      <div id="cons-pagamentos"></div>
+    </div>
 
-      <!-- Linha explicativa detalhada -->
+    <!-- Bloco 5: Saldo final -->
+    <div style="background:var(--surface);border:2px solid var(--border-strong);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">⑤ saldo final consolidado</div>
+
       <div style="background:var(--surface2);border-radius:8px;padding:0.9rem 1.1rem;margin-bottom:1rem;">
         <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
-          <span class="rkey">Proporcionalidade (Michel → Nara)</span>
+          <span class="rkey">Proporcionalidade 2025 (c/ CDI até mai/2026)</span>
           <span class="rval" id="cons-det-prop" style="font-family:var(--mono);">—</span>
+        </div>
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey" id="cons-det-prop26-label">Proporcionalidade 2026 (c/ CDI)</span>
+          <span class="rval" id="cons-det-prop26" style="font-family:var(--mono);">—</span>
         </div>
         <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
           <span class="rkey">Bens: diferença de valor (quem levou mais)</span>
           <span class="rval" id="cons-det-bens" style="font-family:var(--mono);">—</span>
+        </div>
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey">Pagamentos já realizados</span>
+          <span class="rval" id="cons-det-pag" style="font-family:var(--mono);">—</span>
         </div>
         <div class="resumo-row" style="padding-top:4px;">
           <span class="rkey" style="font-weight:500;">Transferência líquida</span>
@@ -410,7 +441,6 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
         </div>
       </div>
 
-      <!-- Resultado final destacado -->
       <div id="cons-resultado" style="border-radius:8px;padding:1.1rem 1.25rem;text-align:center;">
         <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;opacity:0.7;" id="cons-res-label">calculando…</div>
         <div style="font-size:2rem;font-family:var(--mono);font-weight:300;letter-spacing:-0.02em;" id="cons-res-valor">—</div>
@@ -432,16 +462,65 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
     <table class="despesa-table" id="despesa-table"></table>
   </div>
 
+  <!-- MENSAL 2026 -->
+  <div id="tab-mensal26" class="section">
+    <div class="inputs-row">
+      <div class="input-group">
+        <label>Salário médio 2026 — Nara</label>
+        <input type="number" id="sal-nara26" value="11800">
+      </div>
+      <div class="input-group">
+        <label>Salário médio 2026 — Michel</label>
+        <input type="number" id="sal-michel26" value="20600">
+      </div>
+      <button class="recalc-btn" onclick="recalcular26()">↺ recalcular 2026</button>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="mlabel">Total gasto conjunto · 2026</div>
+        <div class="mvalue" id="m-total26">—</div>
+        <div class="msub" id="m-meses26">jan–jul</div>
+      </div>
+      <div class="metric">
+        <div class="mlabel">Michel deve 2026 (bruto)</div>
+        <div class="mvalue green" id="m-bruto26">—</div>
+        <div class="msub" id="m-pct26">—% vs 50%</div>
+      </div>
+      <div class="metric">
+        <div class="mlabel">2026 com CDI 102%</div>
+        <div class="mvalue green" id="m-cdi26">—</div>
+        <div class="msub" id="m-rend26">rendimento: —</div>
+      </div>
+    </div>
+    <table class="mensal-table" id="mensal26-table"></table>
+    <div style="margin-top:1rem;font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);">
+      cada item fica no mês do CSV do Splitwise em que aparece · CDI mensal 2026: debit.com.br (jan–ago oficiais) · itens "plano" e "individual" (100% de uma pessoa no Splitwise) ficam excluídos por padrão
+    </div>
+  </div>
+
+  <!-- DESPESAS 2026 -->
+  <div id="tab-despesas26" class="section">
+    <div class="month-nav" id="month-nav26"></div>
+    <div class="despesa-header" id="despesa-header26"></div>
+    <table class="despesa-table" id="despesa-table26"></table>
+  </div>
+
 </div>
 
 <script>
 const CDI = {1:0.01076,2:0.01057,3:0.01165,4:0.01048,5:0.01073,6:0.01034,7:0.01072,8:0.01119,9:0.01107,10:0.01082,11:0.01028,12:0.01074};
 
-// CDI 2026 — chaves 13–17 = jan–mai/2026
-// Fontes: debit.com.br (jan–abr oficial) | mai estimado (investidor10, dado até 22/05)
+// CDI 2026 (taxas mensais, 100% base) — fonte: debit.com.br, oficiais jan–ago/2026
+const CDI_26 = {1:0.0116, 2:0.0100, 3:0.0121, 4:0.0109, 5:0.0107, 6:0.0112, 7:0.0122, 8:0.0109};
+// CDI jan–mai/2026 aplicado sobre o saldo de 2025 (chaves 13–17) — quitado em 30/05/2026
 const CDI_2026 = {13:0.0116, 14:0.0100, 15:0.0121, 16:0.0109, 17:0.0107};
-const CDI_2026_LABELS = {13:'Janeiro/2026',14:'Fevereiro/2026',15:'Março/2026',16:'Abril/2026',17:'Maio/2026 ⚠'};
-const CDI_2026_NOTAS  = {17:'estimado (mês não encerrado em 30/05/2026)'};
+const CDI_2026_LABELS = {13:'Janeiro/2026',14:'Fevereiro/2026',15:'Março/2026',16:'Abril/2026',17:'Maio/2026'};
+const CDI_2026_NOTAS  = {};
+
+// Pagamentos feitos fora do Splitwise para quitar o consolidado
+const PAGAMENTOS = [
+  {data:'30/05/2026', de:'Michel', para:'Nara', valor:22546.87, desc:'quitou proporcionalidade 2025 + CDI jan–mai/2026 + saldo de bens até a data'},
+];
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 const RAW = [
@@ -646,6 +725,90 @@ RAW.forEach(m => m.items.forEach(i => { estado[i.id] = i.excluido || false; }));
 let mesAtivo = 1;
 let calculado = [];
 
+// ─── 2026 ───────────────────────────────────────────────────────────────────
+// Cada item fica no mês do CSV do Splitwise em que aparece (mesmo com data de outro mês).
+// Itens 100% de uma pessoa no Splitwise entram como 'plano' / 'individual' e ficam excluídos por padrão.
+const RAW_2026 = [
+  {mes:1,nome:'Janeiro',items:[
+    {id:'126-1',data:'15/01',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'126-2',data:'16/01',desc:'Interfone - Conserto',cat:'Manutenção',custo:160.00},
+    {id:'126-3',data:'17/01',desc:'Kar War - Delivery',cat:'Comidas e bebidas',custo:139.00},
+    {id:'126-4',data:'17/01',desc:'Maré - Brinquedos',cat:'Animais de estimação',custo:115.96},
+    {id:'126-5',data:'22/01',desc:'Felga - Chaveira',cat:'Manutenção',custo:230.00},
+    {id:'126-6',data:'30/01',desc:'Rolê com Sil',cat:'Casa - Outros',custo:95.00},
+    {id:'126-7',data:'30/01',desc:'Sorvete',cat:'Casa - Outros',custo:33.33},
+    {id:'126-8',data:'31/01',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'126-9',data:'06/02',desc:'🍁',cat:'Entretenimento',custo:400.00},
+    {id:'126-10',data:'08/02',desc:'Aluguel',cat:'Aluguel',custo:4000.00},
+    {id:'126-11',data:'08/02',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'126-12',data:'10/02',desc:'Cartão Conjunto - Fatura Fevereiro',cat:'Casa - Outros',custo:7339.47},
+  ]},
+  {mes:2,nome:'Fevereiro',items:[
+    {id:'226-1',data:'04/02',desc:'Bradesco - Seguro Residencial',cat:'Seguro',custo:265.52},
+    {id:'226-2',data:'11/02',desc:'Vivo Fibra',cat:'TV/Telefone/Internet',custo:100.00},
+    {id:'226-3',data:'12/02',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'226-4',data:'15/02',desc:'Lalamove - Cida',cat:'Serviços',custo:90.96},
+    {id:'226-5',data:'17/02',desc:'Ixe Sanduíches',cat:'Comidas e bebidas',custo:59.17,excluido:true,tipo:'individual'},
+    {id:'226-6',data:'26/02',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'226-7',data:'27/02',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'226-8',data:'05/03',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4050.29},
+    {id:'226-9',data:'05/03',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'226-10',data:'10/03',desc:'Cartão Conjunto - Fatura Março',cat:'Casa - Outros',custo:5077.33},
+  ]},
+  {mes:3,nome:'Março',items:[
+    {id:'326-1',data:'10/03',desc:'Ixe - Silvinha',cat:'Jantar fora',custo:92.00},
+    {id:'326-2',data:'11/03',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'326-3',data:'17/03',desc:'Pda',cat:'Mercado',custo:33.00},
+    {id:'326-4',data:'18/03',desc:'🍁',cat:'Entretenimento',custo:454.00},
+    {id:'326-5',data:'28/03',desc:'Farmácia - Proctyl + Cacau',cat:'Despesas médicas',custo:92.32},
+    {id:'326-6',data:'30/03',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'326-7',data:'06/04',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4050.29},
+    {id:'326-8',data:'06/04',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'326-9',data:'10/04',desc:'Cartão Conjunto - Fatura Abril',cat:'Casa - Outros',custo:4188.88},
+    {id:'326-10',data:'11/04',desc:'Cida',cat:'Serviços',custo:220.00},
+  ]},
+  {mes:4,nome:'Abril',items:[
+    {id:'426-1',data:'07/04',desc:'Enel',cat:'Eletricidade',custo:264.76},
+    {id:'426-2',data:'28/04',desc:'Carreto móveis lu',cat:'Casa - Outros',custo:80.00},
+    {id:'426-3',data:'30/04',desc:'Plano de Saúde',cat:'Despesas médicas',custo:656.80,excluido:true,tipo:'plano'},
+    {id:'426-4',data:'30/04',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'426-5',data:'07/05',desc:'Aluguel',cat:'Aluguel',custo:4050.29},
+    {id:'426-6',data:'07/05',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'426-7',data:'11/05',desc:'Cartão Conjunto - Fatura Maio',cat:'Casa - Outros',custo:2205.44},
+  ]},
+  {mes:5,nome:'Maio',items:[
+    {id:'526-1',data:'04/05',desc:'Exame Maré',cat:'Animais de estimação',custo:225.00},
+    {id:'526-2',data:'09/05',desc:'Kar Wua + Entrega',cat:'Jantar fora',custo:159.00},
+    {id:'526-3',data:'13/05',desc:'Cida',cat:'Serviços',custo:220.00},
+    {id:'526-4',data:'15/05',desc:'iFood - Ixe',cat:'Jantar fora',custo:117.99},
+    {id:'526-5',data:'15/05',desc:'Potes vidro',cat:'Casa - Outros',custo:120.00},
+    {id:'526-6',data:'15/05',desc:'🍁',cat:'Entretenimento',custo:433.32},
+    {id:'526-7',data:'27/05',desc:'Remédio Maré (CBD)',cat:'Animais de estimação',custo:200.00},
+    {id:'526-8',data:'05/06',desc:'Aluguel + IPTU',cat:'Aluguel',custo:4215.89},
+    {id:'526-9',data:'05/06',desc:'Plano de Saúde',cat:'Despesas médicas',custo:738.71,excluido:true,tipo:'plano'},
+    {id:'526-10',data:'05/06',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'526-11',data:'10/06',desc:'Cartão Conjunto - Fatura Junho',cat:'Casa - Outros',custo:4298.08},
+  ]},
+  {mes:6,nome:'Junho',items:[
+    {id:'626-1',data:'30/06',desc:'Plano de Saúde',cat:'Despesas médicas',custo:738.71,excluido:true,tipo:'plano'},
+    {id:'626-2',data:'07/07',desc:'Condomínio',cat:'Aluguel',custo:400.00},
+    {id:'626-3',data:'10/07',desc:'Cartão Conjunto - Fatura Julho',cat:'Casa - Outros',custo:2392.70},
+    {id:'626-4',data:'10/08',desc:'Aluguel (metade) + IPTU',cat:'Aluguel',custo:2132.80},
+    {id:'626-5',data:'10/08',desc:'Aluguel (metade)',cat:'Aluguel',custo:2082.80},
+  ]},
+  {mes:7,nome:'Julho',items:[
+    {id:'726-1',data:'08/07',desc:'Rodobras - Conserto Parafusadeira',cat:'Serviços',custo:170.00},
+    {id:'726-2',data:'30/07',desc:'Plano de Saúde',cat:'Despesas médicas',custo:738.71,excluido:true,tipo:'plano'},
+    {id:'726-3',data:'10/08',desc:'Cartão Conjunto - Fatura Agosto',cat:'Casa - Outros',custo:1293.07},
+  ]},
+];
+
+const estado26 = {};
+RAW_2026.forEach(m => m.items.forEach(i => { estado26[i.id] = i.excluido || false; }));
+
+let mesAtivo26 = 1;
+let calculado26 = [];
+
 function fmt(v) {
   return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
@@ -688,6 +851,142 @@ function calcularCDI2026(saldoFinal2025) {
     });
   });
   return { meses, saldoFinal: acum, pctTotal: (pctAcum - 1) * 100 };
+}
+
+function calcular26(naraSal, michelSal) {
+  const total = naraSal + michelSal;
+  const naraPct = naraSal / total;
+  const michelPct = michelSal / total;
+  let acumulado = 0, totalBruto = 0;
+  return RAW_2026.map(r => {
+    const ativos = r.items.filter(i => !estado26[i.id]);
+    const totalMes = ativos.reduce((a, i) => a + i.custo, 0);
+    const michelDeveria = totalMes * michelPct;
+    const diferenca = michelDeveria - (totalMes / 2);
+    totalBruto += diferenca;
+    const cdi = CDI_26[r.mes] || 0;
+    acumulado = acumulado * (1 + cdi * 1.02) + diferenca;
+    return { mes: r.mes, nome: r.nome, items: r.items, total: totalMes, michelDeveria, naraDeveria: totalMes * naraPct, diferenca, totalBrutoAcum: totalBruto, rendAcum: acumulado, cdi, naraPct, michelPct };
+  });
+}
+
+function salarios26() {
+  const n = parseFloat(document.getElementById('sal-nara26').value) || 11800;
+  const m = parseFloat(document.getElementById('sal-michel26').value) || 20600;
+  return { n, m };
+}
+
+function recalcular26() {
+  const { n, m } = salarios26();
+  calculado26 = calcular26(n, m);
+  renderMetrics26();
+  renderResumo();
+  renderMensal26();
+  renderDespesas26(mesAtivo26);
+  renderConsolidado();
+  if (db) db.ref('salarios26').set({ nara: n, michel: m });
+}
+
+function toggleItem26(id) {
+  estado26[id] = !estado26[id];
+  if (db) {
+    const exclusoes = {};
+    RAW_2026.forEach(m => m.items.forEach(i => {
+      const defaultVal = i.excluido || false;
+      if (estado26[i.id] !== defaultVal) exclusoes[i.id] = estado26[i.id];
+    }));
+    db.ref('exclusoes26').set(exclusoes);
+  }
+  recalcularSilencioso();
+}
+
+function renderMetrics26() {
+  const ultimo = calculado26[calculado26.length - 1];
+  const totalGasto = calculado26.reduce((a, r) => a + r.total, 0);
+  document.getElementById('m-total26').textContent = fmt(totalGasto);
+  document.getElementById('m-meses26').textContent = calculado26[0].nome.slice(0,3).toLowerCase() + '–' + ultimo.nome.slice(0,3).toLowerCase() + '/2026';
+  document.getElementById('m-bruto26').textContent = fmt(ultimo.totalBrutoAcum);
+  document.getElementById('m-pct26').textContent = (ultimo.michelPct * 100).toFixed(1) + '% vs 50%';
+  document.getElementById('m-cdi26').textContent = fmt(ultimo.rendAcum);
+  document.getElementById('m-rend26').textContent = 'rendimento: ' + fmt(ultimo.rendAcum - ultimo.totalBrutoAcum);
+}
+
+function renderMensal26() {
+  let html = `<thead><tr>
+    <th>Mês</th>
+    <th class="val">Gasto total</th>
+    <th class="val">Michel deveria</th>
+    <th class="val">Diferença mês</th>
+    <th class="val">CDI mês</th>
+    <th class="val">Bruto acum.</th>
+    <th class="val">C/ CDI</th>
+  </tr></thead><tbody>`;
+  calculado26.forEach(r => {
+    html += `<tr>
+      <td>${r.nome}</td>
+      <td class="val">${fmt(r.total)}</td>
+      <td class="val">${fmt(r.michelDeveria)}</td>
+      <td class="val green">${fmt(r.diferenca)}</td>
+      <td class="val" style="color:var(--text-muted)">${(r.cdi * 100).toFixed(2)}%</td>
+      <td class="val">${fmt(r.totalBrutoAcum)}</td>
+      <td class="val green">${fmt(r.rendAcum)}</td>
+    </tr>`;
+  });
+  const ultimo = calculado26[calculado26.length - 1];
+  html += `<tr class="total-row">
+    <td>Total 2026</td>
+    <td class="val">${fmt(calculado26.reduce((a,r)=>a+r.total,0))}</td>
+    <td class="val">—</td>
+    <td class="val green">${fmt(ultimo.totalBrutoAcum)}</td>
+    <td class="val">—</td>
+    <td class="val green">${fmt(ultimo.totalBrutoAcum)}</td>
+    <td class="val green">${fmt(ultimo.rendAcum)}</td>
+  </tr></tbody>`;
+  document.getElementById('mensal26-table').innerHTML = html;
+}
+
+function renderDespesas26(mes) {
+  mesAtivo26 = mes;
+  document.querySelectorAll('#month-nav26 .month-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.mes) === mes));
+  const r = calculado26.find(x => x.mes === mes);
+  if (!r) return;
+
+  document.getElementById('despesa-header26').innerHTML = `
+    <h3>${r.nome} 2026</h3>
+    <div class="dh-stats">
+      <div class="dh-stat"><div class="dsl">total compartilhado</div><div class="dsv">${fmt(r.total)}</div></div>
+      <div class="dh-stat"><div class="dsl">michel deveria pagar</div><div class="dsv">${fmt(r.michelDeveria)}</div></div>
+      <div class="dh-stat"><div class="dsl">diferença do mês</div><div class="dsv green">${fmt(r.diferenca)}</div></div>
+    </div>
+  `;
+
+  let html = `<thead><tr>
+    <th>Data</th><th>Descrição</th><th>Categoria</th><th class="val">Valor</th><th>Ação</th>
+  </tr></thead><tbody>`;
+  r.items.forEach(item => {
+    const excl = estado26[item.id];
+    const tipoLabel = item.tipo === 'plano' ? 'plano' : item.tipo === 'individual' ? 'individual' : 'excluído';
+    const tipoBadge = item.tipo === 'plano' ? 'badge-plano' : item.tipo === 'individual' ? 'badge-individual' : 'badge-excluido';
+    html += `<tr class="${excl ? 'excluida' : ''}">
+      <td>${item.data}</td>
+      <td>${item.desc}${excl ? ` <span class="badge ${tipoBadge}">${tipoLabel}</span>` : ''}</td>
+      <td>${item.cat}</td>
+      <td class="val">${fmt(item.custo)}</td>
+      <td class="act">
+        <button class="toggle-btn ${excl ? 'restore' : ''}" onclick="toggleItem26('${item.id}')">
+          ${excl ? 'restaurar' : 'excluir'}
+        </button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  document.getElementById('despesa-table26').innerHTML = html;
+}
+
+function buildMonthNav26() {
+  document.getElementById('month-nav26').innerHTML = RAW_2026.map((r, i) =>
+    `<button class="month-btn ${i===0?'active':''}" data-mes="${r.mes}" onclick="renderDespesas26(${r.mes})">${r.nome}</button>`
+  ).join('');
 }
 
 function recalcular() {
@@ -739,16 +1038,24 @@ function renderResumo() {
     <div class="resumo-row"><span class="rkey">% justa Michel</span><span class="rval">${(ultimo.michelPct*100).toFixed(1)}%</span></div>
   `;
 
+  const u26 = calculado26.length ? calculado26[calculado26.length - 1] : null;
+  const cdi2026 = calcularCDI2026(ultimo.rendAcum);
   document.getElementById('resumo-final').innerHTML = `
-    <div class="resumo-row"><span class="rkey">Michel deve (bruto)</span><span class="rval green">${fmt(ultimo.totalBrutoAcum)}</span></div>
-    <div class="resumo-row"><span class="rkey">Rendimento perdido CDI</span><span class="rval green">${fmt(ultimo.rendAcum - ultimo.totalBrutoAcum)}</span></div>
-    <div class="resumo-row highlight"><span class="rkey" style="color:var(--green)">Total com rendimento</span><span class="rval">${fmt(ultimo.rendAcum)}</span></div>
+    <div class="resumo-row"><span class="rkey">2025 · Michel deve (bruto)</span><span class="rval green">${fmt(ultimo.totalBrutoAcum)}</span></div>
+    <div class="resumo-row"><span class="rkey">2025 · com CDI até dez/2025</span><span class="rval green">${fmt(ultimo.rendAcum)}</span></div>
+    <div class="resumo-row"><span class="rkey">2025 · com CDI até mai/2026 (quitado 30/05)</span><span class="rval">${fmt(cdi2026.saldoFinal)}</span></div>
+    ${u26 ? `
+    <div class="resumo-row"><span class="rkey">2026 · Michel deve (bruto)</span><span class="rval green">${fmt(u26.totalBrutoAcum)}</span></div>
+    <div class="resumo-row highlight"><span class="rkey" style="color:var(--green)">2026 · com CDI (em aberto)</span><span class="rval">${fmt(u26.rendAcum)}</span></div>` : ''}
   `;
 
-  // Excluídos
+  // Excluídos (2025 + 2026)
   const excluidos = [];
   RAW.forEach(r => r.items.forEach(i => {
-    if (estado[i.id]) excluidos.push({...i, nomeMes: r.nome});
+    if (estado[i.id]) excluidos.push({...i, nomeMes: r.nome + '/25', ano: 2025});
+  }));
+  RAW_2026.forEach(r => r.items.forEach(i => {
+    if (estado26[i.id]) excluidos.push({...i, nomeMes: r.nome + '/26', ano: 2026});
   }));
 
   if (excluidos.length === 0) {
@@ -763,7 +1070,7 @@ function renderResumo() {
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
           <span class="ei-val">${fmt(e.custo)}</span>
-          <button class="toggle-btn restore" onclick="toggleItem('${e.id}')">restaurar</button>
+          <button class="toggle-btn restore" onclick="${e.ano === 2026 ? 'toggleItem26' : 'toggleItem'}('${e.id}')">restaurar</button>
         </div>
       </div>
     `).join('');
@@ -798,7 +1105,7 @@ function renderMensal() {
 
   html += `<tr style="background:var(--surface2);">
     <td colspan="6" style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);padding:10px 14px;">
-      ── rendimento CDI jan–mai/2026 · sem novas despesas ──
+      ── CDI jan–mai/2026 sobre o saldo de 2025 · quitado em 30/05/2026 ──
     </td>
   </tr>`;
 
@@ -843,7 +1150,7 @@ function renderMensal() {
         <div style="background:var(--surface2);padding:0.9rem 1.1rem;">
           <div style="font-size:0.6rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">CDI acumulado jan–mai</div>
           <div style="font-size:1.1rem;font-family:var(--mono);font-weight:300;color:var(--amber);">+${cdi2026.pctTotal.toFixed(2)}%</div>
-          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">mai/2026 estimado (1,07% × 102%)</div>
+          <div style="font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);margin-top:3px;">taxas oficiais · 102% do CDI</div>
         </div>
         <div style="background:var(--amber-bg);padding:0.9rem 1.1rem;">
           <div style="font-size:0.6rem;font-family:var(--mono);color:var(--amber);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">valor final com CDI 2026</div>
@@ -852,7 +1159,10 @@ function renderMensal() {
         </div>
       </div>
       <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);">
-        fontes: debit.com.br (jan–abr/2026 oficiais) · investidor10.com.br (mai/2026 estimado até 22/05/2026)
+        fonte: debit.com.br (jan–mai/2026 oficiais)
+      </div>
+      <div style="margin-top:0.75rem;padding:0.75rem 1rem;background:var(--green-bg);border-radius:8px;font-size:0.75rem;font-family:var(--mono);color:var(--green);">
+        ✓ quitado em 30/05/2026 — Michel pagou Nara ${fmt(PAGAMENTOS[0].valor)} (este valor + saldo de bens da época). Veja o consolidado.
       </div>
     </div>`;
 
@@ -867,7 +1177,7 @@ function renderMensal() {
 
 function renderDespesas(mes) {
   mesAtivo = mes;
-  document.querySelectorAll('.month-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.mes) === mes));
+  document.querySelectorAll('#month-nav .month-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.mes) === mes));
   const r = calculado.find(x => x.mes === mes);
   if (!r) return;
 
@@ -991,6 +1301,24 @@ function initFirebase() {
       recalcularSilencioso();
     });
 
+    // Listener: salários 2026
+    db.ref('salarios26').on('value', snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.nara   !== undefined) document.getElementById('sal-nara26').value   = data.nara;
+        if (data.michel !== undefined) document.getElementById('sal-michel26').value = data.michel;
+        recalcularSilencioso();
+      }
+    });
+
+    // Listener: exclusões 2026
+    db.ref('exclusoes26').on('value', snapshot => {
+      const data = snapshot.val() || {};
+      RAW_2026.forEach(m => m.items.forEach(i => { estado26[i.id] = i.excluido || false; }));
+      Object.keys(data).forEach(id => { if (estado26[id] !== undefined) estado26[id] = data[id]; });
+      recalcularSilencioso();
+    });
+
     mostrarSyncBar('conectado · sync em tempo real ✓');
   } catch(e) {
     console.warn('Firebase não configurado, usando localStorage:', e);
@@ -1005,10 +1333,15 @@ function recalcularSilencioso() {
   const n = parseFloat(document.getElementById('sal-nara').value) || 11800;
   const m = parseFloat(document.getElementById('sal-michel').value) || 20600;
   calculado = calcular(n, m);
+  const s26 = salarios26();
+  calculado26 = calcular26(s26.n, s26.m);
   renderMetrics();
+  renderMetrics26();
   renderResumo();
   renderMensal();
+  renderMensal26();
   renderDespesas(mesAtivo);
+  renderDespesas26(mesAtivo26);
   renderConsolidado();
 }
 
@@ -1147,43 +1480,66 @@ function exportarBensCSV() {
 
 function renderConsolidado() {
   if (!calculado || calculado.length === 0) return;
+  if (!calculado26 || calculado26.length === 0) return;
   const ultimo = calculado[calculado.length - 1];
+  const u26 = calculado26[calculado26.length - 1];
 
-  // Valor com CDI 2026 até 30/05 — esse é o valor real que Michel deve à Nara
+  // ① 2025: saldo com CDI jan–mai/2026 (valor que foi quitado em 30/05/2026)
   const cdi2026 = calcularCDI2026(ultimo.rendAcum);
-  const propMichelDeveNara = cdi2026.saldoFinal;
-  const propSem2026 = ultimo.rendAcum;
+  const prop2025 = cdi2026.saldoFinal;
 
-  // 50% de cada bem = o que quem ficou com ele deve ao outro
+  // ② 2026: proporcionalidade jan–jul com CDI mensal
+  const prop2026 = u26.rendAcum;
+  const periodo26 = calculado26[0].nome.slice(0,3).toLowerCase() + '–' + u26.nome.slice(0,3).toLowerCase() + '/2026';
+
+  // ③ bens: 50% de cada bem = o que quem ficou com ele deve ao outro
   const michelDeveBens = bens.filter(b=>b.dono==='michel').reduce((s,b)=>s+(b.valor/2),0);
   const naraDeveBens   = bens.filter(b=>b.dono==='nara').reduce((s,b)=>s+(b.valor/2),0);
   const saldoBens = michelDeveBens - naraDeveBens;
 
-  // Saldo total: proporcionalidade c/ CDI 2026 + saldo de bens
-  const saldoTotal = propMichelDeveNara + saldoBens;
+  // ④ pagamentos já feitos (positivo = Michel → Nara)
+  const pagos = PAGAMENTOS.reduce((s,p) => s + (p.de === 'Michel' ? p.valor : -p.valor), 0);
 
-  // Bloco 1 — proporcionalidade (agora mostra valor com CDI 2026)
-  document.getElementById('cons-prop-valor').textContent = fmtBens(propMichelDeveNara);
-  // Atualiza subtítulo do bloco 1 para deixar explícito
-  const propSubEl = document.getElementById('cons-prop-sub');
-  if (propSubEl) propSubEl.textContent = `sem CDI 2026: ${fmtBens(propSem2026)} · +${cdi2026.pctTotal.toFixed(2)}% jan–mai/2026`;
+  // ⑤ saldo: positivo = Michel transfere para Nara
+  const saldoTotal = prop2025 + prop2026 + saldoBens - pagos;
 
-  // Bloco 2 — bens
+  // Bloco ①
+  document.getElementById('cons-prop-valor').textContent = fmtBens(prop2025);
+  document.getElementById('cons-prop-para').textContent  = prop2025 >= 0 ? 'Nara' : 'Michel';
+  document.getElementById('cons-prop-sub').textContent   = `saldo dez/2025 ${fmtBens(ultimo.rendAcum)} · +${cdi2026.pctTotal.toFixed(2)}% CDI jan–mai/2026 · quitado em ${PAGAMENTOS[0].data}`;
+
+  // Bloco ②
+  document.getElementById('cons-prop26-label').textContent = (prop2026 >= 0 ? 'Michel' : 'Nara') + ' deve (c/ CDI)';
+  document.getElementById('cons-prop26-valor').textContent = fmtBens(prop2026);
+  document.getElementById('cons-prop26-para').textContent  = prop2026 >= 0 ? 'Nara' : 'Michel';
+  document.getElementById('cons-prop26-sub').textContent   = `${periodo26} · bruto ${fmtBens(u26.totalBrutoAcum)} · rendimento CDI 102% ${fmtBens(u26.rendAcum - u26.totalBrutoAcum)} · em aberto`;
+
+  // Bloco ③
   document.getElementById('cons-bens-michel').textContent = fmtBens(michelDeveBens);
   document.getElementById('cons-bens-nara').textContent   = fmtBens(naraDeveBens);
-
-  const saldoBensLabel = saldoBens > 0.01
+  document.getElementById('cons-bens-diff').textContent = saldoBens > 0.01
     ? `Michel deve mais ${fmtBens(saldoBens)} à Nara pelos bens`
     : saldoBens < -0.01
     ? `Nara deve mais ${fmtBens(Math.abs(saldoBens))} ao Michel pelos bens`
     : 'bens equilibrados entre os dois';
-  document.getElementById('cons-bens-diff').textContent = saldoBensLabel;
 
-  // Bloco 3 — detalhamento
-  document.getElementById('cons-det-prop').textContent  = fmtBens(propMichelDeveNara) + ' (c/ CDI jan–mai/2026)';
-  const sinalBens = saldoBens >= 0 ? '+ ' : '− ';
-  document.getElementById('cons-det-bens').textContent  = sinalBens + fmtBens(Math.abs(saldoBens)) + (saldoBens >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)');
-  document.getElementById('cons-det-total').textContent = fmtBens(Math.abs(saldoTotal));
+  // Bloco ④
+  document.getElementById('cons-pagamentos').innerHTML = PAGAMENTOS.length === 0
+    ? '<div class="empty-excluidos">nenhum pagamento registrado.</div>'
+    : PAGAMENTOS.map(p => `
+      <div class="resumo-row">
+        <span class="rkey"><span class="ei-mes" style="font-family:var(--mono);font-size:0.65rem;background:var(--surface2);padding:2px 6px;border-radius:4px;margin-right:8px;">${p.data}</span>${p.de} → ${p.para} · ${p.desc}</span>
+        <span class="rval">${fmtBens(p.valor)}</span>
+      </div>`).join('');
+
+  // Bloco ⑤ — detalhamento
+  const sinal = v => (v >= 0 ? '+ ' : '− ');
+  document.getElementById('cons-det-prop').textContent   = sinal(prop2025) + fmtBens(prop2025);
+  document.getElementById('cons-det-prop26-label').textContent = `Proporcionalidade 2026 (${periodo26}, c/ CDI)`;
+  document.getElementById('cons-det-prop26').textContent = sinal(prop2026) + fmtBens(prop2026);
+  document.getElementById('cons-det-bens').textContent   = sinal(saldoBens) + fmtBens(saldoBens) + (saldoBens >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)');
+  document.getElementById('cons-det-pag').textContent    = sinal(-pagos) + fmtBens(pagos) + (pagos >= 0 ? ' (Michel já pagou)' : ' (Nara já pagou)');
+  document.getElementById('cons-det-total').textContent  = fmtBens(saldoTotal);
 
   // Resultado final
   const res      = document.getElementById('cons-resultado');
@@ -1202,20 +1558,23 @@ function renderConsolidado() {
     resLabel.textContent = 'Michel transfere para Nara';
     resValor.textContent = fmtBens(saldoTotal);
     resValor.style.color = 'var(--green)';
-    resDir.textContent   = '← inclui proporcionalidade + CDI jan–mai/2026 + bens';
+    resDir.textContent   = `← 2025 + 2026 (${periodo26}) + bens − pagamentos já feitos`;
   } else {
     res.style.background = 'var(--amber-bg)';
     resLabel.textContent = 'Nara transfere para Michel';
     resValor.textContent = fmtBens(Math.abs(saldoTotal));
     resValor.style.color = 'var(--amber)';
-    resDir.textContent   = '→ inclui proporcionalidade + CDI jan–mai/2026 + bens';
+    resDir.textContent   = `→ 2025 + 2026 (${periodo26}) + bens − pagamentos já feitos`;
   }
 }
 
 // ─── FIM CONSOLIDADO ─────────────────────────────────────────────────────────
 
 buildMonthNav();
+buildMonthNav26();
+calculado26 = calcular26(11800, 20600);
 recalcular();
+recalcular26();
 </script>
 </body>
 </html>
