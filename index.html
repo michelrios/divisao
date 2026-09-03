@@ -448,6 +448,39 @@ header p { font-size: 0.75rem; color: var(--text-faint); margin-top: 0.4rem; fon
       </div>
     </div>
 
+    <!-- Bloco 6: conferência para PIX único -->
+    <div style="background:var(--surface);border:2px solid var(--amber);border-radius:10px;padding:1.25rem;margin-top:1rem;">
+      <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);margin-bottom:0.5rem;">⑥ conferência · pix único (site + splitwise em aberto)</div>
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-faint);margin-bottom:1rem;">o "Saldo total" de cada CSV do Splitwise (parte 50/50 que ainda não foi acertada entre vocês) somado ao saldo do site. Ao fazer o PIX, zerar esses grupos no Splitwise.</div>
+
+      <table class="mensal-table" style="margin-bottom:1rem;">
+        <thead><tr><th>Grupo Splitwise</th><th class="val">Saldo em aberto</th><th class="val">Quem deve</th></tr></thead>
+        <tbody id="pix-splitwise"></tbody>
+      </table>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:0.9rem 1.1rem;margin-bottom:1rem;">
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey">Saldo do site (bloco ⑤)</span>
+          <span class="rval" id="pix-det-site" style="font-family:var(--mono);">—</span>
+        </div>
+        <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+          <span class="rkey">Splitwise em aberto (soma dos grupos acima)</span>
+          <span class="rval" id="pix-det-split" style="font-family:var(--mono);">—</span>
+        </div>
+        <div id="pix-det-extras"></div>
+        <div class="resumo-row" style="padding-top:4px;">
+          <span class="rkey" style="font-weight:500;">PIX único</span>
+          <span class="rval" id="pix-det-total" style="font-family:var(--mono);font-weight:500;">—</span>
+        </div>
+      </div>
+
+      <div id="pix-resultado" style="border-radius:8px;padding:1.1rem 1.25rem;text-align:center;">
+        <div style="font-size:0.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;opacity:0.7;" id="pix-res-label">calculando…</div>
+        <div style="font-size:2rem;font-family:var(--mono);font-weight:300;letter-spacing:-0.02em;" id="pix-res-valor">—</div>
+        <div style="font-size:0.8rem;font-family:var(--mono);margin-top:4px;opacity:0.8;" id="pix-res-dir">—</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- MENSAL -->
@@ -516,6 +549,22 @@ const CDI_26 = {1:0.0116, 2:0.0100, 3:0.0121, 4:0.0109, 5:0.0107, 6:0.0112, 7:0.
 const CDI_2026 = {13:0.0116, 14:0.0100, 15:0.0121, 16:0.0109, 17:0.0107};
 const CDI_2026_LABELS = {13:'Janeiro/2026',14:'Fevereiro/2026',15:'Março/2026',16:'Abril/2026',17:'Maio/2026'};
 const CDI_2026_NOTAS  = {};
+
+// "Saldo total" dos CSVs do Splitwise ainda não acertados (parte 50/50). Positivo = Nara deve ao Michel.
+// Conferido em 03/09/2026. Jan e fev/2026 já estavam zerados. Atualizar/zerar aqui quando acertar no Splitwise.
+const SPLITWISE_SALDOS = [
+  {grupo:'Março/2026',  valor: 154.76},
+  {grupo:'Abril/2026',  valor:-263.24},
+  {grupo:'Maio/2026',   valor: 339.14},
+  {grupo:'Junho/2026',  valor:1710.06},
+  {grupo:'Julho/2026',  valor:1470.25},
+  {grupo:'Agosto/2026', valor:1123.66 - 348.96, nota:'sem o Capacete (R$ 348,96), tratado à parte'},
+];
+
+// Acertos avulsos que entram só no PIX único. Positivo = Michel → Nara.
+const ACERTOS_EXTRA = [
+  {desc:'Capacete (Michel deve à Nara)', valor:348.95},
+];
 
 // Pagamentos feitos fora do Splitwise para quitar o consolidado
 const PAGAMENTOS = [
@@ -1571,6 +1620,53 @@ function renderConsolidado() {
     resValor.textContent = fmtBens(Math.abs(saldoTotal));
     resValor.style.color = 'var(--amber)';
     resDir.textContent   = `→ 2025 + 2026 (${periodo26}) + bens − pagamentos já feitos`;
+  }
+
+  // ⑥ PIX único: saldo do site + Splitwise em aberto + acertos avulsos (positivo = Michel → Nara)
+  const splitNaraDeve = SPLITWISE_SALDOS.reduce((s,g) => s + g.valor, 0);
+  const extras = ACERTOS_EXTRA.reduce((s,e) => s + e.valor, 0);
+  const pix = saldoTotal - splitNaraDeve + extras;
+
+  document.getElementById('pix-splitwise').innerHTML = SPLITWISE_SALDOS.map(g => `
+    <tr>
+      <td>${g.grupo}${g.nota ? `<span style="display:block;font-size:0.65rem;font-family:var(--mono);color:var(--text-faint);">${g.nota}</span>` : ''}</td>
+      <td class="val">${fmtBens(g.valor)}</td>
+      <td class="val" style="color:${g.valor >= 0 ? 'var(--amber)' : 'var(--green)'}">${Math.abs(g.valor) < 0.01 ? 'zerado' : g.valor > 0 ? 'Nara → Michel' : 'Michel → Nara'}</td>
+    </tr>`).join('') + `
+    <tr class="total-row">
+      <td>Total Splitwise em aberto</td>
+      <td class="val">${fmtBens(splitNaraDeve)}</td>
+      <td class="val">${Math.abs(splitNaraDeve) < 0.01 ? 'zerado' : splitNaraDeve > 0 ? 'Nara → Michel' : 'Michel → Nara'}</td>
+    </tr>`;
+
+  document.getElementById('pix-det-site').textContent  = sinal(saldoTotal) + fmtBens(saldoTotal) + (saldoTotal >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)');
+  document.getElementById('pix-det-split').textContent = sinal(-splitNaraDeve) + fmtBens(splitNaraDeve) + (splitNaraDeve > 0 ? ' (Nara → Michel)' : ' (Michel → Nara)');
+  document.getElementById('pix-det-extras').innerHTML  = ACERTOS_EXTRA.map(e => `
+    <div class="resumo-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;">
+      <span class="rkey">${e.desc}</span>
+      <span class="rval" style="font-family:var(--mono);">${sinal(e.valor)}${fmtBens(e.valor)}${e.valor >= 0 ? ' (Michel → Nara)' : ' (Nara → Michel)'}</span>
+    </div>`).join('');
+  document.getElementById('pix-det-total').textContent = fmtBens(pix);
+
+  const pres = document.getElementById('pix-resultado');
+  if (Math.abs(pix) < 0.01) {
+    pres.style.background = 'var(--surface2)';
+    document.getElementById('pix-res-label').textContent = 'situação';
+    document.getElementById('pix-res-valor').textContent = 'Quites!';
+    document.getElementById('pix-res-valor').style.color = 'var(--text)';
+    document.getElementById('pix-res-dir').textContent   = 'nenhum PIX necessário';
+  } else if (pix > 0) {
+    pres.style.background = 'var(--green-bg)';
+    document.getElementById('pix-res-label').textContent = 'PIX único · Michel → Nara';
+    document.getElementById('pix-res-valor').textContent = fmtBens(pix);
+    document.getElementById('pix-res-valor').style.color = 'var(--green)';
+    document.getElementById('pix-res-dir').textContent   = 'depois do PIX: zerar os grupos de mar–ago no Splitwise e registrar em PAGAMENTOS';
+  } else {
+    pres.style.background = 'var(--amber-bg)';
+    document.getElementById('pix-res-label').textContent = 'PIX único · Nara → Michel';
+    document.getElementById('pix-res-valor').textContent = fmtBens(Math.abs(pix));
+    document.getElementById('pix-res-valor').style.color = 'var(--amber)';
+    document.getElementById('pix-res-dir').textContent   = 'depois do PIX: zerar os grupos de mar–ago no Splitwise e registrar em PAGAMENTOS';
   }
 }
 
